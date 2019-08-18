@@ -87,9 +87,7 @@ int count_lines(const std::string& filename)
 
 std::vector<int> count_lines_in_files(const std::vector<std::string>& files)
 {
-	std::vector<int> results(files.size());
-	std::transform(files.cbegin(), files.cend(), results.begin(), count_lines);
-	return results;
+	return ranges::to_vector(files | ranges::views::transform(count_lines));
 }
 
 TEST_CASE("test countliens")
