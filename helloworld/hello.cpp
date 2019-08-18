@@ -77,22 +77,28 @@ TEST_CASE("Composability")
 
 // I wanted to understand this example from chapter 1. I will start to organize by chapter after I get this to work
 
-int count_lines(const std::string& filename)
+std::ifstream open_file(const std::string& file)
 {
-	std::ifstream in(filename);
-	auto newlines {std::count(std::istreambuf_iterator<char>(in),
+	return std::ifstream(file);
+}
+
+int count_lines(std::ifstream file)
+{
+	auto newlines {std::count(std::istreambuf_iterator<char>(file),
 		std::istreambuf_iterator<char>(), '\n')};
 	return newlines + 1;
 }
 
 std::vector<int> count_lines_in_files(const std::vector<std::string>& files)
 {
-	return ranges::to_vector(files | ranges::views::transform(count_lines));
+	return ranges::to_vector(files 
+		| ranges::views::transform(open_file)
+		| ranges::views::transform(count_lines));
 }
 
 TEST_CASE("test countliens")
 {
-	auto lines = count_lines("build.sh");
+	auto lines = count_lines(open_file("build.sh"));
 	REQUIRE(4 ==  lines);
 }
 
