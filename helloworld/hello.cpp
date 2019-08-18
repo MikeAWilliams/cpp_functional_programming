@@ -4,6 +4,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <range/v3/algorithm/all_of.hpp>
+#include <range/v3/algorithm/any_of.hpp>
+#include <range/v3/algorithm/for_each.hpp>
+#include <range/v3/algorithm/none_of.hpp>
 #include "catch2/catch.hpp"
 #include "range/v3/all.hpp"
 
@@ -57,4 +61,19 @@ TEST_CASE("test count_liens_in_files")
 	REQUIRE(2 == result.size());
 	REQUIRE(4 == result[0]);
 	REQUIRE(7 == result[1]);
+}
+
+// come back and try https://ericniebler.github.io/range-v3/index.html#example-hello
+
+auto is_six = [](int i) { return i == 6; };
+
+TEST_CASE("any_of-all_of-none_of")
+{
+    std::vector<int> v{6, 2, 3, 4, 5, 6};
+    std::cout << std::boolalpha;
+    std::cout << "vector: " << ranges::views::all(v) << '\n';
+ 
+    REQUIRE(ranges::any_of(v, is_six));
+    REQUIRE_FALSE(ranges::all_of(v, is_six));
+    REQUIRE_FALSE(ranges::none_of(v, is_six));
 }
