@@ -1,0 +1,1 @@
+This is the examples I worked out while rading Functional Programming in C++. I have not included any of the related libraries. I am also learning cmake. 
