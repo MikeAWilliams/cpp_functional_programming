@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.9)
 project (hello)
 
-find_package(Catch2 REQUIRED)
+include_directories(../../third/Catch2/single_include/)
+include_directories(../../third/range-v3/include/)
 
 add_executable(hello hello.cpp)
-target_link_libraries(hello PRIVATE Catch2::Catch2)
