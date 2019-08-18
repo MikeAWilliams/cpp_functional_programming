@@ -1,1 +1,1 @@
-cmake -G "Visual Studio 16" -S . -B ./bin
+cmake -G "Visual Studio 16" -S . -B ./bin 
