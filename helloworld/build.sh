@@ -1,4 +1,4 @@
 #!/bin/bash
-cmake -G "Unix Makefiles"
+cmake -G 'Unix Makefiles'
 make
 ./hello
