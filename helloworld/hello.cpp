@@ -12,16 +12,7 @@
 #include "range/v3/all.hpp"
 
 
-unsigned int Factorial(unsigned int number) {
-	return number <= 1 ? number : Factorial(number - 1) * number;
-}
-
-TEST_CASE("Factorials are computed", "[factorial]") {
-	REQUIRE(Factorial(1) == 1);
-	REQUIRE(Factorial(2) == 2);
-	REQUIRE(Factorial(3) == 6);
-	REQUIRE(Factorial(10) == 3628800);
-}
+// this is the first example on https://ericniebler.github.io/range-v3/ 
 
 TEST_CASE("range example 1", "[ranges]")
 {
@@ -32,6 +23,59 @@ TEST_CASE("range example 1", "[ranges]")
 
 	std::cout << rng << std::endl;
 }
+
+// random examples fromhttps://ericniebler.github.io/range-v3/index.html#example-hello
+
+auto is_six = [](int i) { return i == 6; };
+
+TEST_CASE("any_of-all_of-none_of")
+{
+    std::vector<int> v{6, 2, 3, 4, 5, 6};
+ 
+    REQUIRE(ranges::any_of(v, is_six));
+    REQUIRE_FALSE(ranges::all_of(v, is_six));
+    REQUIRE_FALSE(ranges::none_of(v, is_six));
+}
+
+TEST_CASE("count")
+{
+	std::vector<int> data{6,2,3,4,5,6};
+	auto count = ranges::count(data, 6);
+	REQUIRE(2 == count);
+
+	auto countIfResult = ranges::count_if(data, is_six);
+	REQUIRE(2 == countIfResult);
+}
+
+TEST_CASE("for each")
+{
+	int sum{0};
+	auto badSum = [&sum](int item) {sum += item;};
+    std::vector<int> data{6, 2, 3, 4, 5, 6};
+	ranges::for_each(data, badSum);
+
+	REQUIRE(26 == sum);
+}
+
+TEST_CASE("Composability")
+{
+	auto sum = ranges::accumulate(ranges::views::ints(1, 11)
+		| ranges::views::transform([](int i)
+			{
+				return i*i;
+			}), 0);
+	REQUIRE(385 == sum);
+
+	auto sumSimple = ranges::accumulate(ranges::views::ints(1,11), 0);
+	REQUIRE(55 == sumSimple);
+
+	std::vector<int> data{ 1,2,3,4,5,6,7,8,9,10 };
+	auto specifyResult = ranges::accumulate(data | ranges::views::remove_if([](int i) {return i % 2 == 1; }), 0);
+
+	REQUIRE(30 == specifyResult);
+}
+
+// I wanted to understand this example from chapter 1. I will start to organize by chapter after I get this to work
 
 int count_lines(const std::string& filename)
 {
@@ -61,19 +105,4 @@ TEST_CASE("test count_liens_in_files")
 	REQUIRE(2 == result.size());
 	REQUIRE(4 == result[0]);
 	REQUIRE(7 == result[1]);
-}
-
-// come back and try https://ericniebler.github.io/range-v3/index.html#example-hello
-
-auto is_six = [](int i) { return i == 6; };
-
-TEST_CASE("any_of-all_of-none_of")
-{
-    std::vector<int> v{6, 2, 3, 4, 5, 6};
-    std::cout << std::boolalpha;
-    std::cout << "vector: " << ranges::views::all(v) << '\n';
- 
-    REQUIRE(ranges::any_of(v, is_six));
-    REQUIRE_FALSE(ranges::all_of(v, is_six));
-    REQUIRE_FALSE(ranges::none_of(v, is_six));
 }
