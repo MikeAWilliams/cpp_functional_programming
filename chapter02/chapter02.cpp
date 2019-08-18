@@ -19,11 +19,6 @@ int CountIfNewline(int previousCount, char currentCharacter)
 	return previousCount + 1;
 }
 
-int LinesInString_Accumulate(const std::string input)
-{
-	return std::accumulate(input.cbegin(), input.cend(), 0, CountIfNewline);
-}
-
 TEST_CASE("CountIfNewline")
 {
 	REQUIRE(5 == CountIfNewline(4, '\n'));
@@ -32,6 +27,11 @@ TEST_CASE("CountIfNewline")
 
 	REQUIRE(0 == CountIfNewline(0, 'n'));
 	REQUIRE(7 == CountIfNewline(7, 'w'));
+}
+
+int LinesInString_Accumulate(const std::string input)
+{
+	return std::accumulate(input.cbegin(), input.cend(), 0, CountIfNewline);
 }
 
 void TestNewlineCountinfFunction(std::function<int(const std::string)> f)
