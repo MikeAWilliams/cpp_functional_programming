@@ -56,3 +56,21 @@ TEST_CASE("GetNamesOfFemalesMixed")
 	auto result {GetNamesOfFemales(input)};
 	RequireVectorsMatchUnordered(expectedResult, result);
 }
+
+TEST_CASE("GetNamesOfFemalesAllMale")
+{
+	std::vector<Person> input {{"Bob", false}, {"Susan", false}, {"Joe", false}, {"Stephanie", false}};
+	std::vector<std::string> expectedResult {};
+
+	auto result {GetNamesOfFemales(input)};
+	RequireVectorsMatchUnordered(expectedResult, result);
+}
+
+TEST_CASE("GetNamesOfFemalesAllFemale")
+{
+	std::vector<Person> input {{"Bob", true}, {"Susan", true}, {"Joe", true}, {"Stephanie", true}};
+	std::vector<std::string> expectedResult {"Bob", "Joe", "Susan", "Stephanie"};
+
+	auto result {GetNamesOfFemales(input)};
+	RequireVectorsMatchUnordered(expectedResult, result);
+}
