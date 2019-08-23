@@ -33,8 +33,8 @@ std::string Name(const Person& person)
 std::vector<std::string> GetNamesOfFemales(std::vector<Person> people)
 {
 	people.erase(std::remove_if(people.begin(), people.end(), IsNotFemale), people.end());
-	std::vector<std::string> result(people.size());
 
+	std::vector<std::string> result(people.size());
 	std::transform(people.begin(), people.end(), result.begin(), Name);
 	return result;
 }

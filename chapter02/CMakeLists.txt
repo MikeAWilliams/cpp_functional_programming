@@ -4,4 +4,4 @@ project (chapter02)
 include_directories(../../third/Catch2/single_include/)
 include_directories(../../third/range-v3/include/)
 
-add_executable(chapter02 chapter02.cpp chapter02_07.cpp)
+add_executable(chapter02 chapter02.cpp chapter02_07.cpp chapter02_11.cpp)
