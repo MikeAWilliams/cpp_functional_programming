@@ -32,13 +32,23 @@ static std::string Name(const Person& person)
 // however that doesn't compile right now and I am moving on
 template<typename resultType, typename inputType, typename iteratorType>
 std::vector<resultType> FilterTransform(
-	iteratorType data_begin,
-	iteratorType data_end,
+	iteratorType dataBegin,
+	iteratorType dataEnd,
 	std::function<bool(const inputType&)> filter,
-	std::function<resultType(const inputType&)> transform)
+	std::function<resultType(const inputType&)> transform,
+	std::vector<resultType> previousResult)
 {
-	std::vector<resultType> result;
-	return result;
+	if(dataBegin == dataEnd)
+	{
+		return previousResult;
+	}
+	
+	const auto head = *dataBegin;
+	if(filter(head))
+	{
+		previousResult.push_back(transform(head));
+	}
+	return FilterTransform(dataBegin + 1, dataEnd, filter, transform, previousResult);
 }
 
 static std::vector<std::string> GetNamesOfFemales(const std::vector<Person>& people)
@@ -51,7 +61,7 @@ static std::vector<std::string> GetNamesOfFemales(const std::vector<Person>& peo
 		[](const Person& p)
 		{
 			return Name(p); 
-		});
+		}, {});
 }
 
 template<typename t>
