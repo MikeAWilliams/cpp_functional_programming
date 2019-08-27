@@ -48,7 +48,7 @@ std::vector<resultType> FilterTransformTailRecursion(
 	{
 		previousResult.push_back(transform(head));
 	}
-	return FilterTransformTailRecursion(dataBegin + 1, dataEnd, filter, transform, previousResult);
+	return FilterTransformTailRecursion(dataBegin + 1, dataEnd, filter, transform, std::move(previousResult));
 }
 
 static std::vector<std::string> GetNamesOfFemalesTailRecursion(const std::vector<Person>& people)
@@ -133,7 +133,7 @@ std::vector<resultType> FilterTransformNoTailRecursion(
 	}
 	
 	const auto head = *dataBegin;
-	auto result {FilterTransformTailRecursion(dataBegin + 1, dataEnd, filter, transform, previousResult)};
+	auto result {FilterTransformTailRecursion(dataBegin + 1, dataEnd, filter, transform, std::move(previousResult))};
 
 	if(filter(head))
 	{
@@ -230,4 +230,51 @@ TEST_CASE("Time no tail recursion")
 	auto end {std::chrono::high_resolution_clock::now()};
 	std::chrono::duration<double> time {end - start};
 	std::cout << "no tail reucrsion time " << time.count() << std::endl;
+}
+
+// I am getting no tail recursion on the above results. So lets do a loop version and see what fast is
+template<typename resultType, typename inputType, typename iteratorType>
+std::vector<resultType> FilterTransformLoop(
+	iteratorType dataBegin,
+	iteratorType dataEnd,
+	std::function<bool(const inputType&)> filter,
+	std::function<resultType(const inputType&)> transform)
+{
+	std::vector<resultType> result;
+	for(; dataBegin != dataEnd; ++dataBegin)
+	{
+		if(filter(*dataBegin))
+		{
+			result.emplace_back(transform(*dataBegin));
+		}
+	}
+	return result;
+}
+
+static std::vector<std::string> GetNamesOfFemalesLoop(const std::vector<Person>& people)
+{
+	return FilterTransformLoop<std::string, Person, std::vector<Person>::const_iterator>(people.cbegin(), people.cend(), 
+	    [](const Person& p)
+		{
+			return IsFemale(p);
+		},
+		[](const Person& p)
+		{
+			return Name(p); 
+		});
+}
+
+TEST_CASE("Time loop")
+{
+	auto set {GenerateLargeTestSet()};
+	auto start {std::chrono::high_resolution_clock::now()};
+	
+	for(int i = 0; i < 100; ++i)
+	{
+		RunTest(GetNamesOfFemalesLoop, set.input, set.expectedResult);
+	}
+	
+	auto end {std::chrono::high_resolution_clock::now()};
+	std::chrono::duration<double> time {end - start};
+	std::cout << "Loop time " << time.count() << std::endl;
 }
