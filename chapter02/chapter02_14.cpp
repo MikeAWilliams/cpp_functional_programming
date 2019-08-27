@@ -232,7 +232,8 @@ TEST_CASE("Time no tail recursion")
 	std::cout << "no tail reucrsion time " << time.count() << std::endl;
 }
 
-// I am getting no tail recursion on the above results. So lets do a loop version and see what fast is
+// here is a loop version for comparision
+
 template<typename resultType, typename inputType, typename iteratorType>
 std::vector<resultType> FilterTransformLoop(
 	iteratorType dataBegin,
