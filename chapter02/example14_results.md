@@ -1,0 +1,16 @@
+
+benchmark name                                  samples       iterations    estimated
+                                                mean          low mean      high mean
+                                                std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+loop                                                    100           10    75.098 ms
+                                                  76.283 us    76.242 us    76.333 us
+                                                     229 ns       172 ns       314 ns
+
+tail recursion                                          100            4   85.6392 ms
+                                                 215.539 us   214.231 us    217.83 us
+                                                   8.629 us     5.747 us    13.922 us
+
+no tail recursion                                       100            4     90.59 ms
+                                                 214.937 us   214.009 us   216.656 us
+                                                   6.252 us     3.631 us    10.073 us
