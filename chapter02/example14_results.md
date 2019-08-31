@@ -1,4 +1,4 @@
-
+Example resuls of last run. Clearly not doing tail recursion optimization
 benchmark name                                  samples       iterations    estimated
                                                 mean          low mean      high mean
                                                 std dev       low std dev   high std dev
