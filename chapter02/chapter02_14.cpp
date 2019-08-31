@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
 
 struct Person
@@ -205,31 +206,19 @@ TestSet GenerateLargeTestSet()
 TEST_CASE("Time tail recursion")
 {
 	auto set {GenerateLargeTestSet()};
-	auto start {std::chrono::high_resolution_clock::now()};
-
-	for(int i = 0; i < 100; ++i)
-	{
+	BENCHMARK("tail recursion")
+	{	
 		RunTest(GetNamesOfFemalesTailRecursion, set.input, set.expectedResult);
-	}
-	
-	auto end {std::chrono::high_resolution_clock::now()};
-	std::chrono::duration<double> time {end - start};
-	std::cout << "tail reucrsion time " << time.count() << std::endl;;
+	};
 }
 
 TEST_CASE("Time no tail recursion")
 {
 	auto set {GenerateLargeTestSet()};
-	auto start {std::chrono::high_resolution_clock::now()};
-	
-	for(int i = 0; i < 100; ++i)
+	BENCHMARK("no tail recursion")
 	{
 		RunTest(GetNamesOfFemalesNoTailRecursion, set.input, set.expectedResult);
-	}
-	
-	auto end {std::chrono::high_resolution_clock::now()};
-	std::chrono::duration<double> time {end - start};
-	std::cout << "no tail reucrsion time " << time.count() << std::endl;
+	};
 }
 
 // here is a loop version for comparision
@@ -265,17 +254,11 @@ static std::vector<std::string> GetNamesOfFemalesLoop(const std::vector<Person>&
 		});
 }
 
-TEST_CASE("Time loop")
+TEST_CASE("loop")
 {
 	auto set {GenerateLargeTestSet()};
-	auto start {std::chrono::high_resolution_clock::now()};
-	
-	for(int i = 0; i < 100; ++i)
-	{
+	BENCHMARK("loop time")
+	{	
 		RunTest(GetNamesOfFemalesLoop, set.input, set.expectedResult);
-	}
-	
-	auto end {std::chrono::high_resolution_clock::now()};
-	std::chrono::duration<double> time {end - start};
-	std::cout << "Loop time " << time.count() << std::endl;
+	};
 }
