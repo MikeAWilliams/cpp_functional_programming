@@ -65,6 +65,74 @@ static std::vector<std::string> GetNamesOfFemalesTailRecursion(const std::vector
 		}, {});
 }
 
+template<typename resultType, typename inputType, typename iteratorType>
+std::vector<resultType> FilterTransformNoTailRecursion(
+	iteratorType dataBegin,
+	iteratorType dataEnd,
+	std::function<bool(const inputType&)> filter,
+	std::function<resultType(const inputType&)> transform,
+	std::vector<resultType> previousResult)
+{
+	if(dataBegin == dataEnd)
+	{
+		return previousResult;
+	}
+	
+	const auto head = *dataBegin;
+	auto result {FilterTransformTailRecursion(dataBegin + 1, dataEnd, filter, transform, std::move(previousResult))};
+
+	if(filter(head))
+	{
+		result.push_back(transform(head));
+	}
+	return result;
+}
+
+static std::vector<std::string> GetNamesOfFemalesNoTailRecursion(const std::vector<Person>& people)
+{
+	return FilterTransformNoTailRecursion<std::string, Person, std::vector<Person>::const_iterator>(people.cbegin(), people.cend(), 
+	    [](const Person& p)
+		{
+			return IsFemale(p);
+		},
+		[](const Person& p)
+		{
+			return Name(p); 
+		}, {});
+}
+
+template<typename resultType, typename inputType, typename iteratorType>
+std::vector<resultType> FilterTransformLoop(
+	iteratorType dataBegin,
+	iteratorType dataEnd,
+	std::function<bool(const inputType&)> filter,
+	std::function<resultType(const inputType&)> transform)
+{
+	std::vector<resultType> result;
+	for(; dataBegin != dataEnd; ++dataBegin)
+	{
+		if(filter(*dataBegin))
+		{
+			result.emplace_back(transform(*dataBegin));
+		}
+	}
+	return result;
+}
+
+static std::vector<std::string> GetNamesOfFemalesLoop(const std::vector<Person>& people)
+{
+	return FilterTransformLoop<std::string, Person, std::vector<Person>::const_iterator>(people.cbegin(), people.cend(), 
+	    [](const Person& p)
+		{
+			return IsFemale(p);
+		},
+		[](const Person& p)
+		{
+			return Name(p); 
+		});
+}
+
+// Testing functions
 template<typename t>
 static void RequireVectorsMatchUnordered(std::vector<t>& first, std::vector<t>& second)
 {
@@ -105,6 +173,7 @@ static void RunTestAllFemale(std::function<std::vector<std::string>(const std::v
 	RunTest(toTest, input, expectedResult);
 }
 
+// prove they work for small sets
 TEST_CASE("GetNamesOfFemalesMixed_TailRecursion")
 {
 	RunTestMixed(GetNamesOfFemalesTailRecursion);
@@ -120,41 +189,6 @@ TEST_CASE("GetNamesOfFemalesAllFemale_TailRecursion")
 	RunTestAllFemale(GetNamesOfFemalesTailRecursion);
 }
 
-template<typename resultType, typename inputType, typename iteratorType>
-std::vector<resultType> FilterTransformNoTailRecursion(
-	iteratorType dataBegin,
-	iteratorType dataEnd,
-	std::function<bool(const inputType&)> filter,
-	std::function<resultType(const inputType&)> transform,
-	std::vector<resultType> previousResult)
-{
-	if(dataBegin == dataEnd)
-	{
-		return previousResult;
-	}
-	
-	const auto head = *dataBegin;
-	auto result {FilterTransformTailRecursion(dataBegin + 1, dataEnd, filter, transform, std::move(previousResult))};
-
-	if(filter(head))
-	{
-		result.push_back(transform(head));
-	}
-	return result;
-}
-
-static std::vector<std::string> GetNamesOfFemalesNoTailRecursion(const std::vector<Person>& people)
-{
-	return FilterTransformNoTailRecursion<std::string, Person, std::vector<Person>::const_iterator>(people.cbegin(), people.cend(), 
-	    [](const Person& p)
-		{
-			return IsFemale(p);
-		},
-		[](const Person& p)
-		{
-			return Name(p); 
-		}, {});
-}
 
 TEST_CASE("GetNamesOfFemalesMixed_NoTailRecursion")
 {
@@ -171,31 +205,18 @@ TEST_CASE("GetNamesOfFemalesAllFemale_NoTailRecursion")
 	RunTestAllFemale(GetNamesOfFemalesNoTailRecursion);
 }
 
-// now that I have two methods one with tail recursion and the other without lets see if we can measure the performance difference
-
-struct TestSet
-{
-	std::vector<Person> input;
-	std::vector<std::string> expectedResult;
-};
-
-TestSet GenerateLargeTestSet()
+// run large set for performance testing
+std::vector<Person> GenerateLargeTestSet()
 {
 	const size_t input_size {10'000};
-	TestSet result {std::vector<Person>(input_size), std::vector<std::string>(input_size / 2)};
+	std::vector<Person> result{input_size};
 	
 	bool female {true};
-	auto expectedIter = result.expectedResult.begin();
 	size_t i {0};
-	for(auto & person : result.input)
+	for(auto & person : result)
 	{
 		person.Name = std::to_string(i);
 		person.IsFemale = female;
-		if(female)
-		{
-			*expectedIter = person.Name;
-			++expectedIter;
-		}
 		female = !female;
 		++i;
 	}
@@ -203,62 +224,22 @@ TestSet GenerateLargeTestSet()
 	return result;
 }
 
-TEST_CASE("Time tail recursion")
+
+TEST_CASE("performance testing")
 {
 	auto set {GenerateLargeTestSet()};
+	BENCHMARK("loop")
+	{	
+		GetNamesOfFemalesLoop(set);
+	};
+	set = GenerateLargeTestSet();
 	BENCHMARK("tail recursion")
 	{	
-		RunTest(GetNamesOfFemalesTailRecursion, set.input, set.expectedResult);
+		GetNamesOfFemalesTailRecursion(set);
 	};
-}
-
-TEST_CASE("Time no tail recursion")
-{
-	auto set {GenerateLargeTestSet()};
+	set = GenerateLargeTestSet();
 	BENCHMARK("no tail recursion")
 	{
-		RunTest(GetNamesOfFemalesNoTailRecursion, set.input, set.expectedResult);
-	};
-}
-
-// here is a loop version for comparision
-
-template<typename resultType, typename inputType, typename iteratorType>
-std::vector<resultType> FilterTransformLoop(
-	iteratorType dataBegin,
-	iteratorType dataEnd,
-	std::function<bool(const inputType&)> filter,
-	std::function<resultType(const inputType&)> transform)
-{
-	std::vector<resultType> result;
-	for(; dataBegin != dataEnd; ++dataBegin)
-	{
-		if(filter(*dataBegin))
-		{
-			result.emplace_back(transform(*dataBegin));
-		}
-	}
-	return result;
-}
-
-static std::vector<std::string> GetNamesOfFemalesLoop(const std::vector<Person>& people)
-{
-	return FilterTransformLoop<std::string, Person, std::vector<Person>::const_iterator>(people.cbegin(), people.cend(), 
-	    [](const Person& p)
-		{
-			return IsFemale(p);
-		},
-		[](const Person& p)
-		{
-			return Name(p); 
-		});
-}
-
-TEST_CASE("loop")
-{
-	auto set {GenerateLargeTestSet()};
-	BENCHMARK("loop time")
-	{	
-		RunTest(GetNamesOfFemalesLoop, set.input, set.expectedResult);
+		GetNamesOfFemalesNoTailRecursion(set);
 	};
 }
