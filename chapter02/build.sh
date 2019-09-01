@@ -1,4 +1,4 @@
 #!/bin/bash
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O2"
-make
+cmake -G "Unix Makefiles" 
+cmake --build . --config Release 
 ./chapter02
