@@ -2,7 +2,6 @@
 #include <functional>
 #include <string>
 #include <vector>
-#include <chrono>
 #include <iostream>
 
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
@@ -188,7 +187,6 @@ TEST_CASE("GetNamesOfFemalesAllFemale_TailRecursion")
 {
 	RunTestAllFemale(GetNamesOfFemalesTailRecursion);
 }
-
 
 TEST_CASE("GetNamesOfFemalesMixed_NoTailRecursion")
 {
