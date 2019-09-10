@@ -1,0 +1,15 @@
+benchmark name                                  samples       iterations    estimated
+                                                mean          low mean      high mean
+                                                std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+Call three arg                                          100        17298    69.192 ms
+                                                      40 ns        40 ns        41 ns
+                                                       1 ns         0 ns         3 ns
+
+Call two arg                                            100         1573    70.785 ms
+                                                     447 ns       447 ns       448 ns
+                                                       3 ns         3 ns         4 ns
+
+Call one arg                                            100          827   70.7912 ms
+                                                     855 ns       855 ns       855 ns
+                                                       1 ns         1 ns         2 ns
