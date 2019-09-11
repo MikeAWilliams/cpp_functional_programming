@@ -2,6 +2,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <chrono>
 #include <iostream>
 
 #define CATCH_CONFIG_ENABLE_BENCHMARKING

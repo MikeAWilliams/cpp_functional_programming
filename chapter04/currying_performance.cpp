@@ -1,13 +1,10 @@
-#include <exception>
 #include <functional>
-#include <iostream>
 
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
 
 double MultiplyThreeNumbers(double one, double two, double three)
 {
-	//std::cout << one << " " << two << " " << three << std::endl;
 	return one * two * three;
 }
 
@@ -31,6 +28,7 @@ std::function<std::function<double(double)>(double)> MultiplyThreeNumbers(double
 TEST_CASE("Currying performance testing")
 {
 	REQUIRE(24 == MultiplyThreeNumbers(2, 3, 4));
+	REQUIRE(24 == MultiplyThreeNumbers(2, 3)(4));
 	REQUIRE(24 == MultiplyThreeNumbers(2)(3)(4));
 
 	BENCHMARK("Call three arg")
