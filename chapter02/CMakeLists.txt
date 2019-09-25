@@ -1,7 +1,7 @@
-cmake_minimum_required (VERSION 2.8.9)
+cmake_minimum_required (VERSION 3.0)
 project (chapter02)
 
-include_directories(../../third/Catch2/single_include/)
-include_directories(../../third/range-v3/include/)
+include_directories(
+    /mnt/d/data/programming/cpp/vcpkg/installed/x64-linux/include)
 
 add_executable(chapter02 chapter02.cpp chapter02_07.cpp chapter02_11.cpp chapter02_14.cpp recursive_factorial.cpp)
