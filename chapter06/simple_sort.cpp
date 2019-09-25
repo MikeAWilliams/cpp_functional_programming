@@ -19,8 +19,8 @@ template <class ForwardIt>
     }
  }
 
-template <class ForwardIt>
- void simple_sort(ForwardIt first, ForwardIt last)
+template <class Iterator>
+ void simple_sort(Iterator first, Iterator last)
  {
     if(first == last) 
     {
@@ -34,11 +34,11 @@ template <class ForwardIt>
 
     auto pivotValue = *std::next(first, distance/2);
 
-    ForwardIt middle1 = std::partition(first, last, [pivotValue](const auto& item)
+    Iterator middle1 = std::partition(first, last, [pivotValue](const auto& item)
         { 
             return item < pivotValue; 
         });
-    ForwardIt middle2 = std::partition(middle1, last, [pivotValue](const auto& item)
+    Iterator middle2 = std::partition(middle1, last, [pivotValue](const auto& item)
         { 
             return pivotValue >= item; 
         });
