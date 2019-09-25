@@ -18,61 +18,21 @@ template <class Iterator>
  }
 
 template <class Iterator>
- void lazy_sort(Iterator first, Iterator last, size_t sortSize)
+ void lazy_sort(Iterator first, Iterator positionToSortTo, Iterator last)
  {
-    if(first == last) 
-    {
-        return;
-    }
-    auto distance {std::distance(first, last)};
-    if(1 >= distance)
-    {
-        return;
-    }
-
-    //std::cout << "\nInput value\n";
-    //OutputContainer(first, last);
-
-    auto pivotValue = *std::next(first, distance/2);
-
-    //std::cout << "\npivot value " << pivotValue;
-
-    Iterator middle1 = std::partition(first, last, [pivotValue](const auto& item)
-        { 
-            return item < pivotValue; 
-        });
-
-    //std::cout << "\nAfter pivot 1\n";
-    //OutputContainer(first, last);
-
-    Iterator middle2 = std::partition(middle1, last, [pivotValue](const auto& item)
-        { 
-            return pivotValue >= item; 
-        });
-
-    //std::cout << "\nAfter pivot 2\n";
-    //OutputContainer(first, last);
-
-    lazy_sort(first, middle1, sortSize);
-
-    auto firstHalfDistance {std::distance(first, middle1)};
-    if(firstHalfDistance < sortSize)
-    {
-        //std::cout << "running second half\n";
-        lazy_sort(middle2, last, sortSize);
-    }
+    std::nth_element(first, positionToSortTo, last);
+    std::sort(first, positionToSortTo);
  }
 
 TEST_CASE("test lazy sort happy path")
 {
-    std::vector<int> input {0, 4, 3, 2, 1, 5, 9, 8, 7, 6};
+    constexpr size_t const LAST_SORTED_INDEX {3};
+    std::vector<int> input {9, 0, 8, 1, 7, 2, 6, 3, 4, 5};
 
-    lazy_sort(input.begin(), input.end(), 5);
+    lazy_sort(input.begin(), std::next(input.begin(), LAST_SORTED_INDEX), input.end());
 
-    for(size_t i = 0; i < 5; ++i)
+    for(size_t i = 0; i < LAST_SORTED_INDEX; ++i)
     {
         REQUIRE(i == input[i]);
     }
-
-    OutputContainer(input.begin(), input.end());
 }
