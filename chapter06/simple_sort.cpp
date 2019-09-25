@@ -3,11 +3,9 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
-#include <random>
-#include <forward_list>
 
-template <class ForwardIt>
- void OutputContainer(ForwardIt first, ForwardIt last)
+template <class Iterator>
+ void OutputContainer(Iterator first, Iterator last)
  {
     if(first == last)
     {
