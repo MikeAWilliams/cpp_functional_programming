@@ -1,3 +1,5 @@
+#include <algorithm>
+
 namespace mrange {
 
 template<typename Container>
@@ -28,5 +30,43 @@ void Transform(RangeType& range, TransformFunctionType transformFunction)
       *iter = transformFunction(*iter);
    }
 }
+
+template<typename Iterator, typename PredicateFunctionType>
+class FilterIterator
+{
+public:
+   FilterIterator(Iterator iterator, Iterator end, PredicateFunctionType predicate)
+      : m_currentPosition{iterator}
+      , m_end{end}
+      , m_predicate{predicate}
+      {
+         if(!m_predicate(*m_currentPosition))
+         {
+            this->Increment();
+         }
+      }
+
+   auto& operator++()
+   {
+      return this->Increment();
+   }
+
+   auto operator*()
+   {
+      return *m_currentPosition;
+   }
+
+private:
+   Iterator m_currentPosition;
+   Iterator m_end;
+   PredicateFunctionType m_predicate;
+
+   auto& Increment()
+   {
+      ++m_currentPosition;
+      m_currentPosition = std::find_if(m_currentPosition, m_end, m_predicate);
+      return *this;
+   }
+};
 
 }
