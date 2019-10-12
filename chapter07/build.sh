@@ -1,4 +1,4 @@
 #!/bin/bash
-cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=release "-DCMAKE_TOOLCHAIN_FILE=/home/mwilliams/vcpkg/scripts/buildsystems/vcpkg.cmake" 
+cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=release "-DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake" 
 cmake --build .
 ./chapter07
