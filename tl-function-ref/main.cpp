@@ -1,7 +1,9 @@
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #define CATCH_CONFIG_MAIN 
 #include "catch2/catch.hpp"
 #include <tl/function_ref.hpp>
 
+#include <functional>
 #include <numeric>
 #include <vector>
 
@@ -52,4 +54,49 @@ TEST_CASE("MutateTemplate")
       }); 
 
    RunRequirePlusFive(testData);
+}
+
+template<typename iterator>
+void MutateStdFunction(iterator begin, iterator end, std::function<void(int&)> mutate)
+{
+   for(;begin != end; ++begin)
+   {
+      mutate(*begin);
+   }
+}
+
+TEST_CASE("MutateStdFinction")
+{
+   auto testData {GetSimpleTestData(10)};
+
+   MutateStdFunction(testData.begin(), testData.end(), 
+      [](int& item)
+      {
+         item += 5;
+      }); 
+
+   RunRequirePlusFive(testData);
+}
+
+TEST_CASE("Performance testing")
+{
+   auto testData {GetSimpleTestData(100)};
+	BENCHMARK("TemplateArg")
+	{	
+      MutateTemplate(testData.begin(), testData.end(), 
+         [](int& item)
+         {
+            item += 5;
+         });
+	};
+
+   testData = GetSimpleTestData(100);
+	BENCHMARK("StdFunction")
+	{	
+      MutateStdFunction(testData.begin(), testData.end(), 
+         [](int& item)
+         {
+            item += 5;
+         });
+	};
 }
