@@ -65,11 +65,55 @@ void MutateStdFunction(iterator begin, iterator end, std::function<void(int&)> m
    }
 }
 
-TEST_CASE("MutateStdFinction")
+TEST_CASE("MutateStdFunction")
 {
    auto testData {GetSimpleTestData(10)};
 
    MutateStdFunction(testData.begin(), testData.end(), 
+      [](int& item)
+      {
+         item += 5;
+      }); 
+
+   RunRequirePlusFive(testData);
+}
+
+template<typename iterator>
+void MutateStdFunctionRef(iterator begin, iterator end, const std::function<void(int&)>& mutate)
+{
+   for(;begin != end; ++begin)
+   {
+      mutate(*begin);
+   }
+}
+
+TEST_CASE("MutateStdFunctionRef")
+{
+   auto testData {GetSimpleTestData(10)};
+
+   MutateStdFunctionRef(testData.begin(), testData.end(), 
+      [](int& item)
+      {
+         item += 5;
+      }); 
+
+   RunRequirePlusFive(testData);
+}
+
+template<typename iterator>
+void MutateFunctionRef(iterator begin, iterator end, const tl::function_ref<void(int&)>& mutate)
+{
+   for(;begin != end; ++begin)
+   {
+      mutate(*begin);
+   }
+}
+
+TEST_CASE("MutateFunctionRef")
+{
+   auto testData {GetSimpleTestData(10)};
+
+   MutateFunctionRef(testData.begin(), testData.end(), 
       [](int& item)
       {
          item += 5;
@@ -99,4 +143,24 @@ TEST_CASE("Performance testing")
             item += 5;
          });
 	};
+
+   testData = GetSimpleTestData(100);
+	BENCHMARK("StdFunctionRef")
+	{	
+      MutateStdFunctionRef(testData.begin(), testData.end(), 
+         [](int& item)
+         {
+            item += 5;
+         });
+   };
+
+   testData = GetSimpleTestData(100);
+	BENCHMARK("FunctionRef")
+	{	
+      MutateFunctionRef(testData.begin(), testData.end(), 
+         [](int& item)
+         {
+            item += 5;
+         });
+   };
 }
