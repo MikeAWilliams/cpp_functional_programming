@@ -53,28 +53,28 @@ void MutateFunctionRef(iterator begin, iterator end, const tl::function_ref<void
 TEST_CASE("Performance testing")
 {
    auto testData {GetSimpleTestData(100)};
-	BENCHMARK("TemplateArg")
-	{	
+   BENCHMARK("TemplateArg")
+   {	
       MutateTemplate(testData.begin(), testData.end(), 
          [](int& item)
          {
             item += 5;
          });
-	};
+   };
 
    testData = GetSimpleTestData(100);
-	BENCHMARK("StdFunction")
-	{	
+   BENCHMARK("StdFunction")
+   {	
       MutateStdFunction(testData.begin(), testData.end(), 
          [](int& item)
          {
             item += 5;
          });
-	};
+   };
 
    testData = GetSimpleTestData(100);
-	BENCHMARK("StdFunctionRef")
-	{	
+   BENCHMARK("StdFunctionRef")
+   {	
       MutateStdFunctionRef(testData.begin(), testData.end(), 
          [](int& item)
          {
@@ -83,8 +83,8 @@ TEST_CASE("Performance testing")
    };
 
    testData = GetSimpleTestData(100);
-	BENCHMARK("FunctionRef")
-	{	
+   BENCHMARK("FunctionRef")
+   {	
       MutateFunctionRef(testData.begin(), testData.end(), 
          [](int& item)
          {
