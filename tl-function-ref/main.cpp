@@ -7,13 +7,6 @@
 #include <numeric>
 #include <vector>
 
-std::vector<int> GetSimpleTestData(const size_t size)
-{
-   std::vector<int> result(size);
-   std::iota(result.begin(), result.end(), 0);
-   return result;
-}
-
 template<typename function, typename iterator>
 void MutateTemplate(iterator begin, iterator end, function mutate)
 {
@@ -48,6 +41,13 @@ void MutateFunctionRef(iterator begin, iterator end, const tl::function_ref<void
    {
       mutate(*begin);
    }
+}
+
+std::vector<int> GetSimpleTestData(const size_t size)
+{
+   std::vector<int> result(size);
+   std::iota(result.begin(), result.end(), 0);
+   return result;
 }
 
 TEST_CASE("Performance testing")
