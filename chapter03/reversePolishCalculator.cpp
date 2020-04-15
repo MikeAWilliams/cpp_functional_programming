@@ -19,36 +19,43 @@ std::vector<std::string> Words(std::string words)
 	return std::vector<std::string>(std::istream_iterator<std::string>(wordStream), std::istream_iterator<std::string>());
 }
 
-static const std::unordered_map<std::string, std::function<int(int, int)>> SUPPORTED_OPERATIONS 
+class BinaryOperatorSet
 {
-	{"+",std::plus<int>{}},
-	{"-",std::minus<int>{}},
-	{"*",std::multiplies<int>{}},
-	{"/",std::divides<int>{}}
+private:
+	static const std::unordered_map<std::string, std::function<int(int, int)>> SUPPORTED_OPERATIONS;
+
+public:
+	static bool IsOperator(const std::string& word)
+	{
+		return SUPPORTED_OPERATIONS.find(word) != SUPPORTED_OPERATIONS.end();
+	}
+
+	static int ProcessOperator(const int first, const int second, std::string op)
+	{
+		const auto functionIter {SUPPORTED_OPERATIONS.find(op)};
+		if(SUPPORTED_OPERATIONS.end() == functionIter)
+		{
+			throw std::logic_error("Invalid operator provided");
+		}
+		return functionIter->second(second, first);
+	}
+};
+const std::unordered_map<std::string, std::function<int(int, int)>> BinaryOperatorSet::SUPPORTED_OPERATIONS 
+{
+	{"+", std::plus<int>{}},
+	{"-", std::minus<int>{}},
+	{"*", std::multiplies<int>{}},
+	{"/", std::divides<int>{}}
 };
 
-bool IsOperator(const std::string& word)
-{
-	return SUPPORTED_OPERATIONS.find(word) != SUPPORTED_OPERATIONS.end();
-}
 
-int ProcessOperator(const int first, const int second, std::string op)
-{
-	const auto functionIter {SUPPORTED_OPERATIONS.find(op)};
-	if(SUPPORTED_OPERATIONS.end() == functionIter)
-	{
-		throw std::logic_error("Invalid operator provided");
-	}
-	return functionIter->second(second, first);
-}
-
-std::stack<std::string> ProcessOperator(std::stack<std::string> stack, std::string op)
+std::stack<std::string> ProcessBinaryOperator(std::stack<std::string> stack, std::string op)
 {
 	const int first {std::stoi(stack.top())};
 	stack.pop();
 	const int second {std::stoi(stack.top())};
 	stack.pop();
-	const int result {ProcessOperator(first, second, std::move(op))};
+	const int result {BinaryOperatorSet::ProcessOperator(first, second, std::move(op))};
 
 	stack.push(std::to_string(result));
 	return stack;
@@ -56,9 +63,9 @@ std::stack<std::string> ProcessOperator(std::stack<std::string> stack, std::stri
 
 std::stack<std::string> RPNBinaryOperator(std::stack<std::string> stack, std::string element)
 {
-	if(IsOperator(element))
+	if(BinaryOperatorSet::IsOperator(element))
 	{
-		stack = ProcessOperator(std::move(stack), std::move(element));
+		stack = ProcessBinaryOperator(std::move(stack), std::move(element));
 	}
 	else
 	{
@@ -83,7 +90,7 @@ TEST_CASE("all operators return true", "[IsOperator][RPN]")
 	const std::vector<std::string> requiredOperators {"+", "-", "*", "/"};
 	for(const auto & op : requiredOperators)
 	{
-		REQUIRE(IsOperator(op));
+		REQUIRE(BinaryOperatorSet::IsOperator(op));
 	}
 }
 
