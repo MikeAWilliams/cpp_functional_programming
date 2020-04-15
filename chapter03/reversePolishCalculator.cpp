@@ -34,7 +34,7 @@ bool IsOperator(const std::string& word)
 
 int ProcessOperator(const int first, const int second, std::string op)
 {
-	auto functionIter {SUPPORTED_OPERATIONS.find(op)};
+	const auto functionIter {SUPPORTED_OPERATIONS.find(op)};
 	if(SUPPORTED_OPERATIONS.end() == functionIter)
 	{
 		throw std::logic_error("Invalid operator provided");
@@ -44,11 +44,11 @@ int ProcessOperator(const int first, const int second, std::string op)
 
 std::stack<std::string> ProcessOperator(std::stack<std::string> stack, std::string op)
 {
-	int first {std::stoi(stack.top())};
+	const int first {std::stoi(stack.top())};
 	stack.pop();
-	int second {std::stoi(stack.top())};
+	const int second {std::stoi(stack.top())};
 	stack.pop();
-	int result {ProcessOperator(first, second, std::move(op))};
+	const int result {ProcessOperator(first, second, std::move(op))};
 
 	stack.push(std::to_string(result));
 	return stack;
@@ -70,7 +70,7 @@ std::stack<std::string> RPNBinaryOperator(std::stack<std::string> stack, std::st
 int CalculateRPN(std::string rpnExpression)
 {
 	const auto words {Words(std::move(rpnExpression))};
-	auto accResult {std::accumulate(words.cbegin(), words.cend(), std::stack<std::string>{}, RPNBinaryOperator)};
+	const auto accResult {std::accumulate(words.cbegin(), words.cend(), std::stack<std::string>{}, RPNBinaryOperator)};
 	if(1 != accResult.size())
 	{
 		throw std::logic_error{"the fold didn't work"};
@@ -90,7 +90,7 @@ TEST_CASE("all operators return true", "[IsOperator][RPN]")
 TEST_CASE("test words", "[RPN][words]")
 {
 	const std::vector<std::string> expectedResult {"1", "1", "+"};
-	auto words {Words("1 1 +")};
+	const auto words {Words("1 1 +")};
 
 	REQUIRE(expectedResult == words);
 }
@@ -100,7 +100,7 @@ TEST_CASE("new element is a number starts empty", "[RPN][BinaryOperator]")
 	std::stack<std::string> expectedResult;
 	expectedResult.push("3");
 
-	auto result {RPNBinaryOperator({}, "3")};
+	const auto result {RPNBinaryOperator({}, "3")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -112,7 +112,7 @@ TEST_CASE("new element is a number starts not empty", "[RPN][BinaryOperator]")
 	std::stack<std::string> initialStack {expectedResult};
 	expectedResult.push("3");
 
-	auto result {RPNBinaryOperator(std::move(initialStack), "3")};
+	const auto result {RPNBinaryOperator(std::move(initialStack), "3")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -126,7 +126,7 @@ TEST_CASE("new element is +", "[RPN][BinaryOperator]")
 	initialStack.push("2");
 	initialStack.push("2");
 
-	auto result {RPNBinaryOperator(std::move(initialStack), "+")};
+	const auto result {RPNBinaryOperator(std::move(initialStack), "+")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -140,7 +140,7 @@ TEST_CASE("new element is -", "[RPN][BinaryOperator]")
 	initialStack.push("12");
 	initialStack.push("10");
 
-	auto result {RPNBinaryOperator(std::move(initialStack), "-")};
+	const auto result {RPNBinaryOperator(std::move(initialStack), "-")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -154,7 +154,7 @@ TEST_CASE("new element is *", "[RPN][BinaryOperator]")
 	initialStack.push("12");
 	initialStack.push("10");
 
-	auto result {RPNBinaryOperator(std::move(initialStack), "*")};
+	const auto result {RPNBinaryOperator(std::move(initialStack), "*")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -168,7 +168,7 @@ TEST_CASE("new element is /", "[RPN][BinaryOperator]")
 	initialStack.push("120");
 	initialStack.push("12");
 
-	auto result {RPNBinaryOperator(std::move(initialStack), "/")};
+	const auto result {RPNBinaryOperator(std::move(initialStack), "/")};
 
 	REQUIRE(expectedResult == result);
 }
