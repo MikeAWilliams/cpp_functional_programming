@@ -60,7 +60,7 @@ const std::unordered_map<std::string, std::function<int(int, int)>> BinaryOperat
 	{"/", std::divides<int>{}}
 };
 
-std::stack<std::string> RPNBinaryOperator(std::stack<std::string> stack, std::string element)
+std::stack<std::string> RPNBinaryOperation(std::stack<std::string> stack, std::string element)
 {
 	if(BinaryOperatorSet::IsOperator(element))
 	{
@@ -76,7 +76,7 @@ std::stack<std::string> RPNBinaryOperator(std::stack<std::string> stack, std::st
 int CalculateRPN(std::string rpnExpression)
 {
 	const auto words {Words(std::move(rpnExpression))};
-	const auto accResult {std::accumulate(words.cbegin(), words.cend(), std::stack<std::string>{}, RPNBinaryOperator)};
+	const auto accResult {std::accumulate(words.cbegin(), words.cend(), std::stack<std::string>{}, RPNBinaryOperation)};
 	if(1 != accResult.size())
 	{
 		throw std::logic_error{"the fold didn't work"};
@@ -106,7 +106,7 @@ TEST_CASE("new element is a number starts empty", "[RPN][BinaryOperator]")
 	std::stack<std::string> expectedResult;
 	expectedResult.push("3");
 
-	const auto result {RPNBinaryOperator({}, "3")};
+	const auto result {RPNBinaryOperation({}, "3")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -118,7 +118,7 @@ TEST_CASE("new element is a number starts not empty", "[RPN][BinaryOperator]")
 	std::stack<std::string> initialStack {expectedResult};
 	expectedResult.push("3");
 
-	const auto result {RPNBinaryOperator(std::move(initialStack), "3")};
+	const auto result {RPNBinaryOperation(std::move(initialStack), "3")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -132,7 +132,7 @@ TEST_CASE("new element is +", "[RPN][BinaryOperator]")
 	initialStack.push("2");
 	initialStack.push("2");
 
-	const auto result {RPNBinaryOperator(std::move(initialStack), "+")};
+	const auto result {RPNBinaryOperation(std::move(initialStack), "+")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -146,7 +146,7 @@ TEST_CASE("new element is -", "[RPN][BinaryOperator]")
 	initialStack.push("12");
 	initialStack.push("10");
 
-	const auto result {RPNBinaryOperator(std::move(initialStack), "-")};
+	const auto result {RPNBinaryOperation(std::move(initialStack), "-")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -160,7 +160,7 @@ TEST_CASE("new element is *", "[RPN][BinaryOperator]")
 	initialStack.push("12");
 	initialStack.push("10");
 
-	const auto result {RPNBinaryOperator(std::move(initialStack), "*")};
+	const auto result {RPNBinaryOperation(std::move(initialStack), "*")};
 
 	REQUIRE(expectedResult == result);
 }
@@ -174,7 +174,7 @@ TEST_CASE("new element is /", "[RPN][BinaryOperator]")
 	initialStack.push("120");
 	initialStack.push("12");
 
-	const auto result {RPNBinaryOperator(std::move(initialStack), "/")};
+	const auto result {RPNBinaryOperation(std::move(initialStack), "/")};
 
 	REQUIRE(expectedResult == result);
 }
