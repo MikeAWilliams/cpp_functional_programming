@@ -96,7 +96,7 @@ std::vector<int> count_lines_in_files(const std::vector<std::string>& files)
 TEST_CASE("test countliens")
 {
 	auto lines = count_lines(open_file("build.sh"));
-	REQUIRE(4 ==  lines);
+	REQUIRE(3 ==  lines);
 }
 
 TEST_CASE("test count_liens_in_files")
@@ -104,6 +104,6 @@ TEST_CASE("test count_liens_in_files")
 	std::vector<std::string> files {"build.sh", "CMakeLists.txt"};
 	auto result = count_lines_in_files(files);
 	REQUIRE(2 == result.size());
-	REQUIRE(4 == result[0]);
-	REQUIRE(7 == result[1]);
+	REQUIRE(3 == result[0]);
+	REQUIRE(8 == result[1]);
 }

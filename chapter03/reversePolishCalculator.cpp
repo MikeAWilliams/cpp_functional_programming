@@ -46,6 +46,10 @@ std::stack<std::string> ProcessOperator(std::stack<std::string> stack, std::stri
 	{
 		result = second / first;
 	}
+	else
+	{
+		throw std::logic_error("Invalid operator provided");
+	}
 
 	stack.push(std::to_string(result));
 	return stack;
