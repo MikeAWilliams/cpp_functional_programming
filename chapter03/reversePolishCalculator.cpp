@@ -1,5 +1,4 @@
 #include <exception>
-#include <iostream>
 #include <iterator>
 #include <numeric>
 #include <sstream>
@@ -59,7 +58,7 @@ std::stack<std::string> RPNBinaryOperator(std::stack<std::string> stack, std::st
 {
 	if(IsOperator(element))
 	{
-		stack = ProcessOperator(std::move(stack), element);
+		stack = ProcessOperator(std::move(stack), std::move(element));
 	}
 	else
 	{
@@ -70,7 +69,7 @@ std::stack<std::string> RPNBinaryOperator(std::stack<std::string> stack, std::st
 
 int CalculateRPN(std::string rpnExpression)
 {
-	const auto words {Words(rpnExpression)};
+	const auto words {Words(std::move(rpnExpression))};
 	auto accResult {std::accumulate(words.cbegin(), words.cend(), std::stack<std::string>{}, RPNBinaryOperator)};
 	if(1 != accResult.size())
 	{
