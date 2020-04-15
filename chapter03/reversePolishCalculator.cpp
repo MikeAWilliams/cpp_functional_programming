@@ -64,12 +64,10 @@ std::stack<std::string> RPNBinaryOperation(std::stack<std::string> stack, std::s
 {
 	if(BinaryOperatorSet::IsOperator(element))
 	{
-		stack = BinaryOperatorSet::ProcessOperator(std::move(stack), std::move(element));
+		return BinaryOperatorSet::ProcessOperator(std::move(stack), std::move(element));
 	}
-	else
-	{
-		stack.push(element);
-	}
+
+	stack.push(element);
 	return stack;
 }
 
