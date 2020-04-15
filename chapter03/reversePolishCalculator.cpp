@@ -19,22 +19,23 @@ std::vector<std::string> Words(std::string words)
 	return std::vector<std::string>(std::istream_iterator<std::string>(wordStream), std::istream_iterator<std::string>());
 }
 
+static const std::unordered_map<std::string, std::function<int(int, int)>> SUPPORTED_OPERATIONS 
+{
+	{"+",std::plus<int>{}},
+	{"-",std::minus<int>{}},
+	{"*",std::multiplies<int>{}},
+	{"/",std::divides<int>{}}
+};
+
 bool IsOperator(const std::string& word)
 {
-	return "+" == word || "-" == word || "*" == word || "/" == word;
+	return SUPPORTED_OPERATIONS.find(word) != SUPPORTED_OPERATIONS.end();
 }
 
 int ProcessOperator(const int first, const int second, std::string op)
 {
-	const std::unordered_map<std::string, std::function<int(int, int)>> supportedOperations 
-	{
-		{"+",std::plus<int>{}},
-		{"-",std::minus<int>{}},
-		{"*",std::multiplies<int>{}},
-		{"/",std::divides<int>{}}
-	};
-	auto functionIter {supportedOperations.find(op)};
-	if(supportedOperations.end() == functionIter)
+	auto functionIter {SUPPORTED_OPERATIONS.find(op)};
+	if(SUPPORTED_OPERATIONS.end() == functionIter)
 	{
 		throw std::logic_error("Invalid operator provided");
 	}
