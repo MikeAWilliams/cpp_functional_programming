@@ -1,9 +1,11 @@
 #include <exception>
+#include <functional>
 #include <iterator>
 #include <numeric>
 #include <sstream>
 #include <stack>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "catch2/catch.hpp"
@@ -22,33 +24,30 @@ bool IsOperator(const std::string& word)
 	return "+" == word || "-" == word || "*" == word || "/" == word;
 }
 
+int ProcessOperator(const int first, const int second, std::string op)
+{
+	const std::unordered_map<std::string, std::function<int(int, int)>> supportedOperations 
+	{
+		{"+",std::plus<int>{}},
+		{"-",std::minus<int>{}},
+		{"*",std::multiplies<int>{}},
+		{"/",std::divides<int>{}}
+	};
+	auto functionIter {supportedOperations.find(op)};
+	if(supportedOperations.end() == functionIter)
+	{
+		throw std::logic_error("Invalid operator provided");
+	}
+	return functionIter->second(second, first);
+}
+
 std::stack<std::string> ProcessOperator(std::stack<std::string> stack, std::string op)
 {
 	int first {std::stoi(stack.top())};
 	stack.pop();
 	int second {std::stoi(stack.top())};
 	stack.pop();
-	int result {0};
-	if("+" == op)
-	{
-		result = first + second;
-	}
-	else if("-" == op)
-	{
-		result = second - first;
-	}
-	else if("*" == op)
-	{
-		result = first * second;
-	}
-	else if("/" == op)
-	{
-		result = second / first;
-	}
-	else
-	{
-		throw std::logic_error("Invalid operator provided");
-	}
+	int result {ProcessOperator(first, second, std::move(op))};
 
 	stack.push(std::to_string(result));
 	return stack;
