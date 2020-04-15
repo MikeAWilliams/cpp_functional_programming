@@ -39,6 +39,18 @@ public:
 		}
 		return functionIter->second(second, first);
 	}
+
+	static std::stack<std::string> ProcessOperator(std::stack<std::string> stack, std::string op)
+	{
+		const int first {std::stoi(stack.top())};
+		stack.pop();
+		const int second {std::stoi(stack.top())};
+		stack.pop();
+		const int result {ProcessOperator(first, second, std::move(op))};
+
+		stack.push(std::to_string(result));
+		return stack;
+	}
 };
 const std::unordered_map<std::string, std::function<int(int, int)>> BinaryOperatorSet::SUPPORTED_OPERATIONS 
 {
@@ -48,24 +60,11 @@ const std::unordered_map<std::string, std::function<int(int, int)>> BinaryOperat
 	{"/", std::divides<int>{}}
 };
 
-
-std::stack<std::string> ProcessBinaryOperator(std::stack<std::string> stack, std::string op)
-{
-	const int first {std::stoi(stack.top())};
-	stack.pop();
-	const int second {std::stoi(stack.top())};
-	stack.pop();
-	const int result {BinaryOperatorSet::ProcessOperator(first, second, std::move(op))};
-
-	stack.push(std::to_string(result));
-	return stack;
-}
-
 std::stack<std::string> RPNBinaryOperator(std::stack<std::string> stack, std::string element)
 {
 	if(BinaryOperatorSet::IsOperator(element))
 	{
-		stack = ProcessBinaryOperator(std::move(stack), std::move(element));
+		stack = BinaryOperatorSet::ProcessOperator(std::move(stack), std::move(element));
 	}
 	else
 	{
