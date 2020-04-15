@@ -13,12 +13,6 @@
 // write a revers polish calculator as described in Learn You A Haskell For Great Good
 // http://learnyouahaskell.com/functionally-solving-problems#reverse-polish-notation-calculator
 
-std::vector<std::string> Words(std::string words)
-{
-	std::istringstream wordStream{words};
-	return std::vector<std::string>(std::istream_iterator<std::string>(wordStream), std::istream_iterator<std::string>());
-}
-
 class BinaryOperatorSet
 {
 private:
@@ -59,6 +53,12 @@ const std::unordered_map<std::string, std::function<int(int, int)>> BinaryOperat
 	{"*", std::multiplies<int>{}},
 	{"/", std::divides<int>{}}
 };
+
+std::vector<std::string> Words(std::string words)
+{
+	std::istringstream wordStream{words};
+	return std::vector<std::string>(std::istream_iterator<std::string>(wordStream), std::istream_iterator<std::string>());
+}
 
 std::stack<std::string> RPNBinaryOperation(std::stack<std::string> stack, std::string element)
 {
