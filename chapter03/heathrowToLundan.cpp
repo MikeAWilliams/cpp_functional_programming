@@ -87,7 +87,7 @@ struct PathAlternatives
 PathAlternatives SingleStepFoldingFuction(PathAlternatives previousState, RoadSection newSection)
 {
 	const int forwardToACost {previousState.aPath.cost + newSection.costA};
-	const int crossToACost {previousState.bPath.cost + newSection.costB + newSection.costB};
+	const int crossToACost {previousState.bPath.cost + newSection.costB + newSection.costC};
 	if(forwardToACost <= crossToACost)
 	{
 		previousState.aPath.AddSection(PathSection{'A', newSection.costA});
@@ -98,7 +98,18 @@ PathAlternatives SingleStepFoldingFuction(PathAlternatives previousState, RoadSe
 		previousState.aPath.AddSection(PathSection{'C', newSection.costC});
 	}
 	
-	previousState.bPath.AddSection(PathSection{'B', newSection.costB});
+	const int forwardToBCost {previousState.bPath.cost + newSection.costB};
+	const int crossToBCost {previousState.aPath.cost + newSection.costA + newSection.costC};
+	if(forwardToBCost <= crossToBCost)
+	{
+		previousState.bPath.AddSection(PathSection{'B', newSection.costB});
+	}
+	else
+	{
+		previousState.bPath.AddSection(PathSection{'A', newSection.costA});
+		previousState.bPath.AddSection(PathSection{'C', newSection.costC});
+	}
+
 	return previousState;
 }
 
