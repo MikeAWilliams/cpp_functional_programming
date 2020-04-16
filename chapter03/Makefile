@@ -123,6 +123,33 @@ chapter03/fast:
 	$(MAKE) -f CMakeFiles/chapter03.dir/build.make CMakeFiles/chapter03.dir/build
 .PHONY : chapter03/fast
 
+heathrowToLundan.o: heathrowToLundan.cpp.o
+
+.PHONY : heathrowToLundan.o
+
+# target to build an object file
+heathrowToLundan.cpp.o:
+	$(MAKE) -f CMakeFiles/chapter03.dir/build.make CMakeFiles/chapter03.dir/heathrowToLundan.cpp.o
+.PHONY : heathrowToLundan.cpp.o
+
+heathrowToLundan.i: heathrowToLundan.cpp.i
+
+.PHONY : heathrowToLundan.i
+
+# target to preprocess a source file
+heathrowToLundan.cpp.i:
+	$(MAKE) -f CMakeFiles/chapter03.dir/build.make CMakeFiles/chapter03.dir/heathrowToLundan.cpp.i
+.PHONY : heathrowToLundan.cpp.i
+
+heathrowToLundan.s: heathrowToLundan.cpp.s
+
+.PHONY : heathrowToLundan.s
+
+# target to generate assembly for a file
+heathrowToLundan.cpp.s:
+	$(MAKE) -f CMakeFiles/chapter03.dir/build.make CMakeFiles/chapter03.dir/heathrowToLundan.cpp.s
+.PHONY : heathrowToLundan.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -186,6 +213,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... chapter03"
 	@echo "... edit_cache"
+	@echo "... heathrowToLundan.o"
+	@echo "... heathrowToLundan.i"
+	@echo "... heathrowToLundan.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
