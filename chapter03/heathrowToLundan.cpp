@@ -28,6 +28,11 @@ struct PathSection
 {
 	char label;
 	int cost;
+
+	bool operator==(const PathSection& other) const
+	{
+		return label == other.label && cost == other.cost;
+	}
 };
 
 using Path = std::vector<PathSection>;
@@ -54,6 +59,11 @@ struct PathCostPair
 		cost += newSection.cost;
 		path.push_back(newSection);
 	}
+
+	bool operator==(const PathCostPair& other) const
+	{
+		return cost == other.cost && path == other.path;
+	}
 };
 
 struct PathAlternatives
@@ -76,40 +86,23 @@ struct PathAlternatives
 
 PathAlternatives SingleStepFoldingFuction(PathAlternatives previousState, RoadSection newSection)
 {
-	previousState.aPath.AddSection(PathSection{'A', newSection.costA});
+	const int forwardToACost {previousState.aPath.cost + newSection.costA};
+	const int crossToACost {previousState.bPath.cost + newSection.costB + newSection.costB};
+	if(forwardToACost <= crossToACost)
+	{
+		previousState.aPath.AddSection(PathSection{'A', newSection.costA});
+	}
+	else
+	{
+		previousState.aPath.AddSection(PathSection{'B', newSection.costB});
+		previousState.aPath.AddSection(PathSection{'C', newSection.costC});
+	}
+	
 	previousState.bPath.AddSection(PathSection{'B', newSection.costB});
 	return previousState;
 }
 
-bool ComparePathCostPair(const PathCostPair& left, const PathCostPair& right)
-{
-	if(left.cost != right.cost)
-	{
-		return false;
-	}
-
-	if(left.path.size() != right.path.size())
-	{
-		return false;
-	}
-
-	auto leftIter {left.path.cbegin()};
-	for(const auto& rightSection : right.path)
-	{
-		if(leftIter->cost != rightSection.cost)
-		{
-			return false;
-		}
-		if(leftIter->label != rightSection.label)
-		{
-			return false;
-		}
-		++leftIter;
-	}
-	return true;
-}
-
-TEST_CASE("Forward price is less for both", "[heathrowToLundan][testFoldingFunction]")
+TEST_CASE("Forward price is less for both inital empty", "[heathrowToLundan][testFoldingFunction]")
 {
 	const RoadSection inputSection {10, 11, 100};
 	PathAlternatives initialAlternatives {PathCostPair{Path{}, 0}, PathCostPair{Path{}, 0}};
@@ -119,6 +112,21 @@ TEST_CASE("Forward price is less for both", "[heathrowToLundan][testFoldingFunct
 	expectedAlternatives.bPath.AddSection(PathSection{'B', 11});
 
 	auto result {SingleStepFoldingFuction(std::move(initialAlternatives), std::move(inputSection))};
-	REQUIRE(ComparePathCostPair(expectedAlternatives.aPath, result.aPath));
-	REQUIRE(ComparePathCostPair(expectedAlternatives.bPath, result.bPath));
+	REQUIRE(expectedAlternatives.aPath == result.aPath);
+	REQUIRE(expectedAlternatives.bPath == result.bPath);
+}
+
+TEST_CASE("Forward cost to a is high initial empty", "[heathrowToLundan][testFoldingFunction]")
+{
+	const RoadSection inputSection {100, 10, 11};
+	PathAlternatives initialAlternatives {PathCostPair{Path{}, 0}, PathCostPair{Path{}, 0}};
+	PathAlternatives expectedAlternatives {initialAlternatives};
+
+	expectedAlternatives.aPath.AddSection(PathSection{'B', 10});
+	expectedAlternatives.aPath.AddSection(PathSection{'C', 11});
+	expectedAlternatives.bPath.AddSection(PathSection{'B', 10});
+
+	auto result {SingleStepFoldingFuction(std::move(initialAlternatives), std::move(inputSection))};
+	REQUIRE(expectedAlternatives.aPath == result.aPath);
+	REQUIRE(expectedAlternatives.bPath == result.bPath);
 }
