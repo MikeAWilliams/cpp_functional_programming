@@ -130,3 +130,18 @@ TEST_CASE("Forward cost to a is high initial empty", "[heathrowToLundan][testFol
 	REQUIRE(expectedAlternatives.aPath == result.aPath);
 	REQUIRE(expectedAlternatives.bPath == result.bPath);
 }
+
+TEST_CASE("Forward cost to b is high initial empty", "[heathrowToLundan][testFoldingFunction]")
+{
+	const RoadSection inputSection {10, 100, 11};
+	PathAlternatives initialAlternatives {PathCostPair{Path{}, 0}, PathCostPair{Path{}, 0}};
+	PathAlternatives expectedAlternatives {initialAlternatives};
+
+	expectedAlternatives.aPath.AddSection(PathSection{'A', 10});
+	expectedAlternatives.bPath.AddSection(PathSection{'A', 10});
+	expectedAlternatives.bPath.AddSection(PathSection{'C', 11});
+
+	auto result {SingleStepFoldingFuction(std::move(initialAlternatives), std::move(inputSection))};
+	REQUIRE(expectedAlternatives.aPath == result.aPath);
+	REQUIRE(expectedAlternatives.bPath == result.bPath);
+}
