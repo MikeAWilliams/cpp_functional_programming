@@ -1,6 +1,8 @@
 #include <exception>
+#include <iostream>
 #include <functional>
 #include <iterator>
+#include <memory>
 #include <numeric>
 #include <sstream>
 #include <stack>
@@ -40,7 +42,9 @@ using Path = std::vector<PathSection>;
 struct PathCostPair
 {
 	Path path;
-	int cost;
+	int cost {0};
+
+	PathCostPair() = default;
 
 	PathCostPair(Path p, int c)
 		: path {std::move(p)}
@@ -71,6 +75,8 @@ struct PathAlternatives
 	PathCostPair aPath;
 	PathCostPair bPath;
 
+	PathAlternatives() = default;
+
 	PathAlternatives(PathCostPair a, PathCostPair b)
 		: aPath {std::move(a)}
 		, bPath {std::move(b)}
@@ -86,38 +92,62 @@ struct PathAlternatives
 
 PathAlternatives SingleStepFoldingFuction(PathAlternatives previousState, RoadSection newSection)
 {
+	// the a and b paths are so anoyingly similar. Try to refactor this to make it a function call
 	const int forwardToACost {previousState.aPath.cost + newSection.costA};
 	const int crossToACost {previousState.bPath.cost + newSection.costB + newSection.costC};
-	if(forwardToACost <= crossToACost)
-	{
-		previousState.aPath.AddSection(PathSection{'A', newSection.costA});
-	}
-	else
-	{
-		previousState.aPath.AddSection(PathSection{'B', newSection.costB});
-		previousState.aPath.AddSection(PathSection{'C', newSection.costC});
-	}
-	
+
 	const int forwardToBCost {previousState.bPath.cost + newSection.costB};
 	const int crossToBCost {previousState.aPath.cost + newSection.costA + newSection.costC};
-	if(forwardToBCost <= crossToBCost)
+
+	std::unique_ptr<PathCostPair> newAPath;
+	if(forwardToACost <= crossToACost)
 	{
-		previousState.bPath.AddSection(PathSection{'B', newSection.costB});
+		newAPath = std::make_unique<PathCostPair>(previousState.aPath);
+		newAPath->AddSection(PathSection{'A', newSection.costA});
 	}
 	else
 	{
-		previousState.bPath.AddSection(PathSection{'A', newSection.costA});
-		previousState.bPath.AddSection(PathSection{'C', newSection.costC});
+		newAPath = std::make_unique<PathCostPair>(previousState.bPath);
+		newAPath->AddSection(PathSection{'B', newSection.costB});
+		newAPath->AddSection(PathSection{'C', newSection.costC});
+	}
+	
+	std::unique_ptr<PathCostPair> newBPath;
+	if(forwardToBCost <= crossToBCost)
+	{
+		newBPath = std::make_unique<PathCostPair>(previousState.bPath);
+		newBPath->AddSection(PathSection{'B', newSection.costB});
+	}
+	else
+	{
+		newBPath = std::make_unique<PathCostPair>(previousState.aPath);
+		newBPath->AddSection(PathSection{'A', newSection.costA});
+		newBPath->AddSection(PathSection{'C', newSection.costC});
 	}
 
-	return previousState;
+	return PathAlternatives{*(newAPath.get()), *(newBPath.get())};
+}
+
+PathCostPair OptimalPath(const RoadSystem& problemSystem)
+{
+	PathAlternatives initialAlternatives;
+	auto alternatives {std::accumulate(
+		problemSystem.cbegin(), 
+		problemSystem.cend(), 
+		std::move(initialAlternatives),
+		SingleStepFoldingFuction)};
+	if(alternatives.aPath.cost < alternatives.bPath.cost)
+	{
+		return alternatives.aPath;
+	}
+	return alternatives.bPath;
 }
 
 TEST_CASE("Forward price is less for both inital empty", "[heathrowToLundan][testFoldingFunction]")
 {
 	const RoadSection inputSection {10, 11, 100};
-	PathAlternatives initialAlternatives {PathCostPair{Path{}, 0}, PathCostPair{Path{}, 0}};
-	PathAlternatives expectedAlternatives {initialAlternatives};
+	PathAlternatives initialAlternatives;
+	PathAlternatives expectedAlternatives;
 
 	expectedAlternatives.aPath.AddSection(PathSection{'A', 10});
 	expectedAlternatives.bPath.AddSection(PathSection{'B', 11});
@@ -130,8 +160,8 @@ TEST_CASE("Forward price is less for both inital empty", "[heathrowToLundan][tes
 TEST_CASE("Forward cost to a is high initial empty", "[heathrowToLundan][testFoldingFunction]")
 {
 	const RoadSection inputSection {100, 10, 11};
-	PathAlternatives initialAlternatives {PathCostPair{Path{}, 0}, PathCostPair{Path{}, 0}};
-	PathAlternatives expectedAlternatives {initialAlternatives};
+	PathAlternatives initialAlternatives; 
+	PathAlternatives expectedAlternatives;
 
 	expectedAlternatives.aPath.AddSection(PathSection{'B', 10});
 	expectedAlternatives.aPath.AddSection(PathSection{'C', 11});
@@ -145,8 +175,8 @@ TEST_CASE("Forward cost to a is high initial empty", "[heathrowToLundan][testFol
 TEST_CASE("Forward cost to b is high initial empty", "[heathrowToLundan][testFoldingFunction]")
 {
 	const RoadSection inputSection {10, 100, 11};
-	PathAlternatives initialAlternatives {PathCostPair{Path{}, 0}, PathCostPair{Path{}, 0}};
-	PathAlternatives expectedAlternatives {initialAlternatives};
+	PathAlternatives initialAlternatives;
+	PathAlternatives expectedAlternatives;
 
 	expectedAlternatives.aPath.AddSection(PathSection{'A', 10});
 	expectedAlternatives.bPath.AddSection(PathSection{'A', 10});
@@ -155,4 +185,18 @@ TEST_CASE("Forward cost to b is high initial empty", "[heathrowToLundan][testFol
 	auto result {SingleStepFoldingFuction(std::move(initialAlternatives), std::move(inputSection))};
 	REQUIRE(expectedAlternatives.aPath == result.aPath);
 	REQUIRE(expectedAlternatives.bPath == result.bPath);
+}
+
+TEST_CASE("solve the example problem", "[heathrowToLundan][testOptimalPath]")
+{
+	PathCostPair expectedResult;
+	expectedResult.AddSection(PathSection{'B', 10});
+	expectedResult.AddSection(PathSection{'C', 30});
+	expectedResult.AddSection(PathSection{'A', 5});
+	expectedResult.AddSection(PathSection{'C', 20});
+	expectedResult.AddSection(PathSection{'B', 2});
+	expectedResult.AddSection(PathSection{'B', 8});
+
+	const auto result {OptimalPath(ExampleRoadSystem)};
+	REQUIRE(expectedResult == result);
 }
