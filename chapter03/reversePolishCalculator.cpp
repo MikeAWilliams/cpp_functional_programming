@@ -215,6 +215,7 @@ TEST_CASE("benchmakrs", "[RPN]")
 	{
 		testString += " 2 +";
 	}
+	REQUIRE(2000004 == CalculateRPN(testString));
 	BENCHMARK("RPN 1000002 twos")
 	{
 		CalculateRPN(testString);
