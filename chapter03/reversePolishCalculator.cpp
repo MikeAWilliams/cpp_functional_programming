@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
 
 // write a revers polish calculator as described in Learn You A Haskell For Great Good
@@ -205,4 +206,17 @@ TEST_CASE("complex", "[RPN]")
 TEST_CASE("complex with devide", "[RPN]")
 {
 	REQUIRE(2 == CalculateRPN("10 4 3 + 2 * - -2 /"));
+}
+
+TEST_CASE("benchmakrs", "[RPN]")
+{
+	std::string testString {"2 2 +"};
+	for(size_t i = 0; i < 1000000; ++i)
+	{
+		testString += " 2 +";
+	}
+	BENCHMARK("RPN 1000002 twos")
+	{
+		CalculateRPN(testString);
+	};
 }
