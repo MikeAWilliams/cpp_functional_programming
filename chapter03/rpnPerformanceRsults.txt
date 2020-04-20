@@ -1,0 +1,13 @@
+-------------------------------------------------------------------------------
+benchmakrs
+-------------------------------------------------------------------------------
+/home/mumakin/cpp_functional_programming/chapter03/reversePolishCalculator.cpp:211
+...............................................................................
+
+benchmark name                                  samples       iterations    estimated
+                                                mean          low mean      high mean
+                                                std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+RPN 1000002 twos                                        100            1    50.4115 s
+                                                 510.968 ms   510.102 ms   512.148 ms
+                                                 5.12098 ms   3.82854 ms   7.93299 ms
