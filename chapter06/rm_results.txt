@@ -1,0 +1,16 @@
+Benchmarks
+-------------------------------------------------------------------------------
+/home/mumakin/cpp_functional_programming/chapter06/recursive_memoization.cpp:86
+...............................................................................
+
+benchmark name                                  samples       iterations    estimated
+                                                mean          low mean      high mean
+                                                std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+Memoized Fibonacci 1 - 20                               100          552   68.6136 ms
+                                                   1.239 us     1.233 us     1.251 us
+                                                      43 ns        23 ns        70 ns
+
+Non Memoized Fibonacci 1 - 20                           100            1   483.183 ms
+                                                 4.79153 ms   4.76934 ms   4.83303 ms
+                                                 150.469 us    92.232 us   238.171 us

@@ -1,3 +1,5 @@
+// performance tests for listing 6.9
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
 #include <iostream>
 #include <iterator>
@@ -38,10 +40,10 @@ public:
 
         if(cachedIter != m_cache.end())
         {
-            std::cout << "Hit cache\n";
+            //std::cout << "Hit cache\n";
             return cachedIter->second;
         }
-        std::cout << "Missed cache\n";
+        //std::cout << "Missed cache\n";
         auto&& result {f(*this, std::forward<InnerArgs>(args)...)};
         m_cache[args_tuple] = result;
         return result;
@@ -54,7 +56,7 @@ memoize_helper<Sig, std::decay_t<F>> make_memoized_r(F&& f)
     return {std::forward<F>(f), null_param()};
 }
 
-TEST_CASE("Test mem-fib")
+TEST_CASE("mem fib")
 {
     auto fibmemo = make_memoized_r<unsigned int(unsigned int)>(
         [](auto& fib, unsigned int n){
@@ -68,4 +70,38 @@ TEST_CASE("Test mem-fib")
 
     std::cout << "First Call 8\n\n";
     REQUIRE(21 == fibmemo(8));
+}
+
+unsigned int RecursiveFib(unsigned int n)
+{
+    return n == 0 ? 0 : n == 1 ? 1 : RecursiveFib(n - 1) + RecursiveFib(n - 2);
+}
+
+TEST_CASE("recursive fib")
+{
+    REQUIRE(8 == RecursiveFib(6));
+    REQUIRE(21 == RecursiveFib(8));
+}
+
+TEST_CASE("Benchmarks") 
+{
+    BENCHMARK("Memoized Fibonacci 1 - 20") 
+    {
+        auto fibmemo = make_memoized_r<unsigned int(unsigned int)>(
+            [](auto& fib, unsigned int n){
+                return n == 0 ? 0 : n == 1 ? 1 : fib(n - 1) + fib(n - 2);
+            });
+        for(unsigned int i = 0; i < 30; ++i)
+        {
+            fibmemo(i);
+        }
+    };
+
+    BENCHMARK("Non Memoized Fibonacci 1 - 20") 
+    {
+        for(unsigned int i = 0; i < 30; ++i)
+        {
+            RecursiveFib(i);
+        }
+    };
 }
