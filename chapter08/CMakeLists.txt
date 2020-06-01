@@ -6,6 +6,6 @@ include_directories(
 
  find_package(Immer CONFIG REQUIRED)
 
-add_executable(chapter08 main.cpp helloImmer.cpp)
+add_executable(chapter08 main.cpp helloImmer.cpp undoStack.cpp)
 target_link_libraries(chapter08 PRIVATE immer)
 set_property(TARGET chapter08 PROPERTY CXX_STANDARD 17)
