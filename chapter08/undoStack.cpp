@@ -1,3 +1,4 @@
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
 #include "immer/array.hpp"
 
@@ -51,7 +52,7 @@ std::vector<std::vector<int>> MakeUndoState(std::vector<int> initialState)
 TEST_CASE("check MakeUndoState vector", "[immer]")
 {
     std::vector<int> init(500, -100);
-    auto result = MakeUndoState(init);
+    auto result {MakeUndoState(std::move(init))};
     CheckUndoState(std::move(result));
 }
 
@@ -72,6 +73,19 @@ std::vector<immer::array<int>> MakeUndoState(immer::array<int> initialState)
 TEST_CASE("check MakeUndoState immerArray", "[immer]")
 {
     immer::array<int> init(500, -100);
-    auto result = MakeUndoState(init);
+    auto result {MakeUndoState(std::move(init))};
     CheckUndoState(std::move(result));
+}
+
+TEST_CASE("performance tests", "[immer")
+{
+    BENCHMARK("vector")
+    {
+        auto result {MakeUndoState(std::vector(5000, -100))};
+    };
+
+    BENCHMARK("immer_array")
+    {
+        auto result {MakeUndoState(immer::array(5000, -100))};
+    };
 }
