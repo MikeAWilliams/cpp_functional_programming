@@ -288,6 +288,19 @@ TEST_CASE("test scoring forty p2", "[tennis]")
     REQUIRE(TennisScore::fourty == p2Score);
 }
 
+TEST_CASE("test p1 wins at forty", "[tennis]")
+{
+    TennisGame testObject;
+    
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+
+    REQUIRE(TennisScore::victory == p1Score);
+    REQUIRE(TennisScore::love == p2Score);
+}
+
 TEST_CASE("test scoring duce advantage", "[tennis]")
 {
     TennisGame testObject;
