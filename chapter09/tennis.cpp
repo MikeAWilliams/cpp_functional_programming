@@ -128,7 +128,7 @@ class TennisGame
                 {
                     if(state.leader == whoScoredThePoint)
                     {
-
+                        m_state = winner { whoScoredThePoint, Convert(state.otherPlayerScore) };
                     }
                     else
                     {
@@ -192,7 +192,14 @@ class TennisGame
                 [&](const winner state)
                 {
                     std::cout << "GetScore in winner scoring" << std::endl;
-                    result = {TennisScore::love, TennisScore::love};
+                    if(Player::player1 == state.whoWon)
+                    {
+                        result = {TennisScore::victory, state.otherPlayerScore};
+                    }
+                    else
+                    {
+                        result = {state.otherPlayerScore, TennisScore::victory};
+                    }
                 }
             },
             m_state);
@@ -295,10 +302,29 @@ TEST_CASE("test p1 wins at forty", "[tennis]")
     testObject.ScorePoint(Player::player1);
     testObject.ScorePoint(Player::player1);
     testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player2);
     testObject.ScorePoint(Player::player1);
 
+    auto [ p1Score, p2Score] = testObject.GetScore();
+
     REQUIRE(TennisScore::victory == p1Score);
-    REQUIRE(TennisScore::love == p2Score);
+    REQUIRE(TennisScore::fifteen == p2Score);
+}
+
+TEST_CASE("test p2 wins at forty", "[tennis]")
+{
+    TennisGame testObject;
+    
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player2);
+
+    auto [ p1Score, p2Score] = testObject.GetScore();
+
+    REQUIRE(TennisScore::fifteen == p1Score);
+    REQUIRE(TennisScore::victory == p2Score);
 }
 
 TEST_CASE("test scoring duce advantage", "[tennis]")
