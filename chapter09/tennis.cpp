@@ -16,6 +16,7 @@ enum class TennisScore
     fifteen,
     thirty,
     fourty,
+    duce,
     advantage,
     notAdvantage,
     victory
@@ -55,6 +56,12 @@ class TennisGame
         Player whoHasAdvantate;
     };
 
+    struct winner
+    {
+        Player whoWon;
+        TennisScore otherPlayerScore;
+    };
+
     points Score(points initialValue)
     {
         if(points::love == initialValue)
@@ -78,7 +85,7 @@ class TennisGame
         return TennisScore::love;
     }
 
-    std::variant<normalScoring, fourtyScoring, duce, advantageScoring> m_state;
+    std::variant<normalScoring, fourtyScoring, duce, advantageScoring, winner> m_state;
 
     public:
     TennisGame()
@@ -92,7 +99,7 @@ class TennisGame
         std::visit(
             patternMatcher 
             {
-                [&](normalScoring& state)
+                [&](normalScoring &state)
                 {
                     if(Player::player1 == whoScoredThePoint)
                     {
@@ -117,9 +124,24 @@ class TennisGame
                         }
                     }
                 },
-                [&](const fourtyScoring state)
+                [&](fourtyScoring &state)
                 {
-                    std::cout << "scoring point in fourty scoring" << std::endl;
+                    if(state.leader == whoScoredThePoint)
+                    {
+
+                    }
+                    else
+                    {
+                        if(points::thirty == state.otherPlayerScore)
+                        {
+                            m_state = duce{};
+                        }
+                        else 
+                        {
+                            state.otherPlayerScore = Score(state.otherPlayerScore);
+                        }
+                    }
+                    
                 },
                 [&](const duce state)
                 {
@@ -128,6 +150,9 @@ class TennisGame
                 [&](const advantageScoring state)
                 {
                     std::cout << "scoring point in advantage scoring" << std::endl;
+                },
+                [&](const winner state)
+                {
                 }
 
             },
@@ -157,12 +182,16 @@ class TennisGame
                 },
                 [&](const duce state)
                 {
-                    std::cout << "GetScore in douce scoring" << std::endl;
-                    result = {TennisScore::love, TennisScore::love};
+                    result = {TennisScore::duce, TennisScore::duce};
                 },
                 [&](const advantageScoring state)
                 {
                     std::cout << "GetScore in advantage scoring" << std::endl;
+                    result = {TennisScore::love, TennisScore::love};
+                },
+                [&](const winner state)
+                {
+                    std::cout << "GetScore in winner scoring" << std::endl;
                     result = {TennisScore::love, TennisScore::love};
                 }
             },
@@ -209,7 +238,7 @@ TEST_CASE("test scoring no state transition", "[tennis]")
     REQUIRE(TennisScore::thirty == p2Score);
 }
 
-TEST_CASE("test scoring forty", "[tennis]")
+TEST_CASE("test scoring forty p1", "[tennis]")
 {
     TennisGame testObject;
     
@@ -220,4 +249,58 @@ TEST_CASE("test scoring forty", "[tennis]")
 
     REQUIRE(TennisScore::fourty == p1Score);
     REQUIRE(TennisScore::love == p2Score);
+
+    testObject.ScorePoint(Player::player2);
+    std::tie(p1Score, p2Score) = testObject.GetScore();
+
+    REQUIRE(TennisScore::fourty == p1Score);
+    REQUIRE(TennisScore::fifteen == p2Score);
+
+    testObject.ScorePoint(Player::player2);
+    std::tie(p1Score, p2Score) = testObject.GetScore();
+
+    REQUIRE(TennisScore::fourty == p1Score);
+    REQUIRE(TennisScore::thirty == p2Score);
+}
+
+TEST_CASE("test scoring forty p2", "[tennis]")
+{
+    TennisGame testObject;
+    
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    auto [ p1Score, p2Score] = testObject.GetScore();
+
+    REQUIRE(TennisScore::love == p1Score);
+    REQUIRE(TennisScore::fourty == p2Score);
+
+    testObject.ScorePoint(Player::player1);
+    std::tie(p1Score, p2Score) = testObject.GetScore();
+
+    REQUIRE(TennisScore::fifteen == p1Score);
+    REQUIRE(TennisScore::fourty == p2Score);
+
+    testObject.ScorePoint(Player::player1);
+    std::tie(p1Score, p2Score) = testObject.GetScore();
+
+    REQUIRE(TennisScore::thirty == p1Score);
+    REQUIRE(TennisScore::fourty == p2Score);
+}
+
+TEST_CASE("test scoring duce advantage", "[tennis]")
+{
+    TennisGame testObject;
+    
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+
+    auto [ p1Score, p2Score] = testObject.GetScore();
+
+    REQUIRE(TennisScore::duce == p1Score);
+    REQUIRE(TennisScore::duce == p2Score);
 }
