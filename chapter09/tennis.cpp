@@ -342,4 +342,10 @@ TEST_CASE("test scoring duce advantage", "[tennis]")
 
     REQUIRE(TennisScore::duce == p1Score);
     REQUIRE(TennisScore::duce == p2Score);
+
+    testObject.ScorePoint(Player::player1);
+    std::tie(p1Score, p2Score) = testObject.GetScore();
+
+    REQUIRE(TennisScore::advantage == p1Score);
+    REQUIRE(TennisScore::notAdvantage == p2Score);
 }
