@@ -1,6 +1,5 @@
 #include "catch2/catch.hpp"
 
-#include <iostream>
 #include <tuple>
 #include <variant>
 
@@ -53,7 +52,7 @@ class TennisGame
 
     struct advantageScoring
     {
-        Player whoHasAdvantate;
+        Player whoHasAdvantage;
     };
 
     struct winner
@@ -145,11 +144,19 @@ class TennisGame
                 },
                 [&](const duce state)
                 {
-                    std::cout << "scoring point in douce scoring" << std::endl;
+                    m_state = advantageScoring {whoScoredThePoint};
                 },
                 [&](const advantageScoring state)
                 {
-                    std::cout << "scoring point in advantage scoring" << std::endl;
+                    if(state.whoHasAdvantage == whoScoredThePoint)
+                    {
+                        m_state = winner { whoScoredThePoint, TennisScore::notAdvantage };
+                    }
+                    else
+                    {
+                        m_state = duce {};
+                    }
+                    
                 },
                 [&](const winner state)
                 {
@@ -186,12 +193,17 @@ class TennisGame
                 },
                 [&](const advantageScoring state)
                 {
-                    std::cout << "GetScore in advantage scoring" << std::endl;
-                    result = {TennisScore::love, TennisScore::love};
+                    if(Player::player1 == state.whoHasAdvantage)
+                    {
+                        result = {TennisScore::advantage, TennisScore::notAdvantage};
+                    }
+                    else 
+                    {
+                        result = {TennisScore::notAdvantage, TennisScore::advantage};
+                    }
                 },
                 [&](const winner state)
                 {
-                    std::cout << "GetScore in winner scoring" << std::endl;
                     if(Player::player1 == state.whoWon)
                     {
                         result = {TennisScore::victory, state.otherPlayerScore};
@@ -348,4 +360,56 @@ TEST_CASE("test scoring duce advantage", "[tennis]")
 
     REQUIRE(TennisScore::advantage == p1Score);
     REQUIRE(TennisScore::notAdvantage == p2Score);
+
+    testObject.ScorePoint(Player::player2);
+    std::tie(p1Score, p2Score) = testObject.GetScore();
+
+    REQUIRE(TennisScore::duce == p1Score);
+    REQUIRE(TennisScore::duce == p2Score);
+
+    testObject.ScorePoint(Player::player2);
+    std::tie(p1Score, p2Score) = testObject.GetScore();
+
+    REQUIRE(TennisScore::notAdvantage == p1Score);
+    REQUIRE(TennisScore::advantage == p2Score);
+}
+
+TEST_CASE("test p1 wins from advantage", "[tennis]")
+{
+    TennisGame testObject;
+    
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+
+    auto [ p1Score, p2Score] = testObject.GetScore();
+
+    REQUIRE(TennisScore::victory == p1Score);
+    REQUIRE(TennisScore::notAdvantage == p2Score);
+}
+
+TEST_CASE("test p2 wins from advantage", "[tennis]")
+{
+    TennisGame testObject;
+    
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+    testObject.ScorePoint(Player::player1);
+
+    testObject.ScorePoint(Player::player2);
+    testObject.ScorePoint(Player::player2);
+
+    auto [ p1Score, p2Score] = testObject.GetScore();
+
+    REQUIRE(TennisScore::notAdvantage == p1Score);
+    REQUIRE(TennisScore::victory == p2Score);
 }
