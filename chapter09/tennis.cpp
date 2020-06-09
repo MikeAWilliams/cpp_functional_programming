@@ -160,6 +160,7 @@ class TennisGame
                 },
                 [&](const winner state)
                 {
+                    throw "Attempted to score in a game that is over";
                 }
 
             },
