@@ -30,3 +30,25 @@ TEST_CASE("test AddThreeToOddNumbers", "[testTestFunctions]")
    auto twoResult {AddThreeToOddNumbers(2)};
    REQUIRE_FALSE(twoResult);
 }
+
+TEST_CASE("half expected", "[testTestFunctions]")
+{
+  auto fourResult {HalfE(4)};
+  REQUIRE(fourResult);
+  REQUIRE(fourResult.value() == 2);
+
+  auto threeResult {HalfE(3)};
+  REQUIRE_FALSE(threeResult);
+  REQUIRE("The value was odd" == threeResult.error());
+}
+
+TEST_CASE("test AddThreeToOddNumbers expected", "[testTestFunctions]")
+{
+   auto threeResult {AddThreeToOddNumbersE(3)};
+   REQUIRE(threeResult);
+   REQUIRE(threeResult.value() == 6);
+
+   auto twoResult {AddThreeToOddNumbersE(2)};
+   REQUIRE_FALSE(twoResult);
+  REQUIRE("The value was odd" == twoResult.error());
+}

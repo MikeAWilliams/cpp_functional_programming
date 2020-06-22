@@ -21,6 +21,15 @@ std::optional<int> Half(int value)
    return {};
 }
 
+tl::expected<int, std::string> HalfE(int value)
+{
+   if(IsEven(value))
+   {
+      return value / 2;
+   }
+   return tl::make_unexpected("The value was odd");
+}
+
 std::optional<int> AddThreeToOddNumbers(int value)
 {
    if(!IsEven(value))
@@ -28,6 +37,15 @@ std::optional<int> AddThreeToOddNumbers(int value)
       return 3 + value;
    }
    return {};
+}
+
+tl::expected<int, std::string> AddThreeToOddNumbersE(int value)
+{
+   if(!IsEven(value))
+   {
+      return 3 + value;
+   }
+   return tl::make_unexpected("The value was odd");
 }
 
 // simulated real functions

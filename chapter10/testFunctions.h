@@ -1,10 +1,15 @@
+#include "tl/expected.hpp"
+
 #include <optional>
+#include <string>
 
 // toy functionions
 double Add3(double value);
 bool IsEven(int value);
 std::optional<int> Half(int value);
+tl::expected<int, std::string> HalfE(int value);
 std::optional<int> AddThreeToOddNumbers(int value);
+tl::expected<int, std::string> AddThreeToOddNumbersE(int value);
 
 // simulated real functions
 struct Configuration
