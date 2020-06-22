@@ -4,5 +4,5 @@ project (chapter10)
 include_directories(
     ~/vcpkg/installed/x64-linux/include)
 
-add_executable(chapter10 main.cpp testOptional.cpp)
+add_executable(chapter10 main.cpp testOptional.cpp testFunctions.cpp testTestFunctions.cpp)
 set_property(TARGET chapter10 PROPERTY CXX_STANDARD 17)
