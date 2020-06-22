@@ -11,7 +11,7 @@ tl::expected<T,E> transform(const tl::expected<T,E>& exp, F f)
 }
 
 template <typename T, typename E, typename F>
-tl::expected<T,E> mbind(const tl::expected<T,E>& exp, F f)
+auto mbind(const tl::expected<T,E>& exp, F f) -> decltype(f(exp.value()))
 {
    if(exp)
    {

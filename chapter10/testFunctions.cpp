@@ -45,7 +45,7 @@ tl::expected<int, std::string> AddThreeToOddNumbersE(int value)
    {
       return 3 + value;
    }
-   return tl::make_unexpected("The value was odd");
+   return tl::make_unexpected("The value was even");
 }
 
 // simulated real functions
@@ -65,6 +65,24 @@ std::optional<DoesWork> GetDoesWork(const Configuration& config)
    if(config.searchDepth < 1)
    {
       return {};
+   }
+   return DoesWork{};
+}
+
+tl::expected<Configuration, std::string> GetConfigurationE(const std::string &error, int depth)
+{
+   if(error.size() > 0)
+   {
+      return tl::make_unexpected(error);
+   }
+   return Configuration {depth};
+}
+
+tl::expected<DoesWork, std::string> GetDoesWorkE(const Configuration& config)
+{
+   if(config.searchDepth < 1)
+   {
+      return tl::make_unexpected(std::string{"The search depth must be >= 1"});
    }
    return DoesWork{};
 }

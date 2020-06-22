@@ -24,3 +24,6 @@ class DoesWork
 };
 
 std::optional<DoesWork> GetDoesWork(const Configuration& config);
+
+tl::expected<Configuration, std::string> GetConfigurationE(const std::string &error, int depth);
+tl::expected<DoesWork, std::string> GetDoesWorkE(const Configuration& config);

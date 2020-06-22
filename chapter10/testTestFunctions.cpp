@@ -50,5 +50,5 @@ TEST_CASE("test AddThreeToOddNumbers expected", "[testTestFunctions]")
 
    auto twoResult {AddThreeToOddNumbersE(2)};
    REQUIRE_FALSE(twoResult);
-  REQUIRE("The value was odd" == twoResult.error());
+  REQUIRE("The value was even" == twoResult.error());
 }
