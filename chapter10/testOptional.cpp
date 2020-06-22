@@ -2,8 +2,6 @@
 
 #include <optional>
 
-#include "range/v3/all.hpp"
-
 #include "optional_functional.h"
 #include "testFunctions.h"
 
