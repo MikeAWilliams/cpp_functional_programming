@@ -2,27 +2,7 @@
 
 #include <optional>
 
-//Functional Programming in C++ by Ivan Cukic
-// listing 10.1
-template <typename T1, typename F>
-auto transform(const std::optional<T1>& opt, F f) -> decltype(std::make_optional(f(opt.value())))
-{
-   if(opt)
-   {
-      return std::make_optional(f(opt.value()));
-   }
-   return {};
-}
-
-template <typename T1, typename F>
-auto mbind(const std::optional<T1>& opt, F f) -> decltype(f(opt.value()))
-{
-   if(opt)
-   {
-      return f(opt.value());
-   }
-   return {};
-}
+#include "optional_functional.h"
 
 double Add3(double value)
 {
@@ -79,4 +59,44 @@ TEST_CASE("test mbind", "[optional_scratch]")
 
    auto threeResult {mbind(std::optional<int>{3}, Half)};
    REQUIRE_FALSE(threeResult);
+}
+
+std::optional<int> AddThreeToOddNumbers(int value)
+{
+   if(!IsEven(value))
+   {
+      return 3 + value;
+   }
+   return {};
+}
+
+TEST_CASE("test AddThreeToOddNumbers", "[optional_scratch]")
+{
+   auto threeResult {AddThreeToOddNumbers(3)};
+   REQUIRE(threeResult);
+   REQUIRE(threeResult.value() == 6);
+
+   auto twoResult {AddThreeToOddNumbers(2)};
+   REQUIRE_FALSE(twoResult);
+}
+
+
+TEST_CASE("test mbind chain", "[optional_scratch]")
+{
+   auto sixResult {mbind(Half(6), AddThreeToOddNumbers)};
+   REQUIRE(sixResult);
+   REQUIRE(6 == sixResult.value());
+
+   auto sevenResult {mbind(Half(7), AddThreeToOddNumbers)};
+   REQUIRE_FALSE(sevenResult);
+
+   auto eightResult {mbind(Half(8), AddThreeToOddNumbers)};
+   REQUIRE_FALSE(eightResult);
+
+   auto eightResult2mbindes {mbind(mbind(std::make_optional(8), Half), AddThreeToOddNumbers)};
+   REQUIRE_FALSE(eightResult2mbindes);
+
+   auto sixResult2mbindes {mbind(mbind(std::make_optional(6), Half), AddThreeToOddNumbers)};
+   REQUIRE(sixResult2mbindes);
+   REQUIRE(sixResult2mbindes.value() == 6);
 }
