@@ -1,4 +1,6 @@
 #include <optional>
+#include "range/v3/view/transform.hpp"
+#include <range/v3/view/filter.hpp>
 
 //Functional Programming in C++ by Ivan Cukic
 // listing 10.1

@@ -2,6 +2,8 @@
 
 #include <optional>
 
+#include "range/v3/all.hpp"
+
 #include "optional_functional.h"
 #include "testFunctions.h"
 
@@ -44,4 +46,16 @@ TEST_CASE("test mbind chain", "[optional]")
    auto sixResult2mbindes {mbind(mbind(std::make_optional(6), Half), AddThreeToOddNumbers)};
    REQUIRE(sixResult2mbindes);
    REQUIRE(sixResult2mbindes.value() == 6);
+}
+
+TEST_CASE("simulate real monad use", "[optional]")
+{
+   auto worker_errorConfig {mbind(GetConfiguration(true, 1), GetDoesWork)};
+   REQUIRE_FALSE(worker_errorConfig);
+
+   auto worker_errorSearchDepth {mbind(GetConfiguration(false, -8), GetDoesWork)};
+   REQUIRE_FALSE(worker_errorSearchDepth);
+
+   auto worker {mbind(GetConfiguration(false, 1), GetDoesWork)};
+   REQUIRE(worker);
 }
