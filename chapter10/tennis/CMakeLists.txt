@@ -8,4 +8,5 @@ add_executable(tennis
    main.cpp
    testTennis.cpp
    tennis.cpp)
+   
 set_property(TARGET tennis PROPERTY CXX_STANDARD 17)
