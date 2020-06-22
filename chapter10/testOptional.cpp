@@ -5,7 +5,7 @@
 #include "optional_functional.h"
 #include "testFunctions.h"
 
-TEST_CASE("test transrom", "[optional_scratch]")
+TEST_CASE("test transrom", "[optional]")
 {
    auto resultWithEmpty = transform(std::optional<double>{}, Add3);
    REQUIRE_FALSE(resultWithEmpty);
@@ -16,7 +16,7 @@ TEST_CASE("test transrom", "[optional_scratch]")
    REQUIRE(resultWithTwo.value() == 5.0);
 }
 
-TEST_CASE("test mbind", "[optional_scratch]")
+TEST_CASE("test mbind", "[optional]")
 {
    auto fourResult {mbind(std::optional<int>{4}, Half)};
    REQUIRE(fourResult);
@@ -26,7 +26,7 @@ TEST_CASE("test mbind", "[optional_scratch]")
    REQUIRE_FALSE(threeResult);
 }
 
-TEST_CASE("test mbind chain", "[optional_scratch]")
+TEST_CASE("test mbind chain", "[optional]")
 {
    auto sixResult {mbind(Half(6), AddThreeToOddNumbers)};
    REQUIRE(sixResult);
