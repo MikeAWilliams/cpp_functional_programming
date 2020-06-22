@@ -45,6 +45,7 @@ namespace tennis {
                {
                   auto nsResult {state}; 
                   nsResult.player1Score = AdvanceScore(state.player1Score);
+                  result = nsResult;
                },
                [&](const internal::fourtyScoring &state)
                {
