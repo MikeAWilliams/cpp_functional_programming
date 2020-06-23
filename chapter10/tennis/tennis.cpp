@@ -11,6 +11,8 @@ template <typename... Ts> patternMatcher(Ts...) -> patternMatcher<Ts...>;
 static tennis::internal::points AdvanceScore(tennis::internal::points initialValue);
 static tennis::Score Convert(tennis::internal::points value);
 static std::function<void(const tennis::internal::normalScoring& state)> GetNormalScoringFunction(tennis::GameState& result, const int playerIndex);
+static int GetOtherPlayerIndex(int playerIndex);
+static tennis::internal::Player GetPlayerByIndex(int index);
 
 namespace tennis {
 
@@ -33,6 +35,14 @@ namespace tennis {
             },
             [&](const internal::fourtyScoring& state)
             {
+               if(internal::Player::player1 == state.leader)
+               {
+                  result = {tennis::Score::fourty, Convert(state.otherPlayerScore)};
+               }
+               else
+               {
+                  result = {Convert(state.otherPlayerScore), tennis::Score::fourty};
+               }
             }
          }, stateArg);
       return result;
@@ -98,8 +108,36 @@ static std::function<void(const tennis::internal::normalScoring& state)> GetNorm
 {
    return [&result, playerIndex{std::move(playerIndex)}](const tennis::internal::normalScoring& state)
    {
-      auto nsResult {state}; 
-      nsResult.scores[playerIndex] = AdvanceScore(state.scores[playerIndex]);
-      result = nsResult;
+      if(state.scores[playerIndex] != tennis::internal::points::thirty)
+      {
+         auto nsResult {state}; 
+         nsResult.scores[playerIndex] = AdvanceScore(state.scores[playerIndex]);
+         result = nsResult;
+      }
+      else
+      {
+         tennis::internal::fourtyScoring fsResult;
+         fsResult.leader = GetPlayerByIndex(playerIndex);
+         fsResult.otherPlayerScore = state.scores[GetOtherPlayerIndex(playerIndex)];
+         result = fsResult;
+      }
    };
+}
+
+static int GetOtherPlayerIndex(int playerIndex)
+{
+   if(0 == playerIndex)
+   {
+      return 1;
+   }
+   return 0;
+}
+
+static tennis::internal::Player GetPlayerByIndex(int index)
+{
+   if(0 == index)
+   {
+      return tennis::internal::Player::player1;
+   }
+   return tennis::internal::Player::player2;
 }
