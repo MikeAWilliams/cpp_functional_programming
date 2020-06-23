@@ -150,6 +150,12 @@ static std::function<void(const tennis::internal::fourtyScoring& state)> GetFour
          vsResult.otherPlayerScore = Convert(state.otherPlayerScore);
          result = vsResult;
       }
+      else 
+      {
+         auto fsResult {state};
+         fsResult.otherPlayerScore = AdvanceScore(state.otherPlayerScore);
+         result = fsResult;
+      }
                   
    };
 }
