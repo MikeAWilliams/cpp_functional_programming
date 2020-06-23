@@ -41,18 +41,28 @@ namespace internal {
       points otherPlayerScore;
    };
 
+   struct duceScoring
+   {
+   };
+
+   struct advantageScoring
+   {
+      Player leader;
+   };
+
    struct victoryScoring
    {
       Player winner;
       Score otherPlayerScore;
    };
-   
-   struct duceScoring
-   {
-   };
 }
 
-   using GameState = std::variant<internal::normalScoring, internal::fourtyScoring, internal::duceScoring, internal::victoryScoring>;
+   using GameState = std::variant<
+      internal::normalScoring,
+      internal::fourtyScoring, 
+      internal::duceScoring, 
+      internal::advantageScoring,
+      internal::victoryScoring>;
 
    GameState MakeLoveLoveGame();
 

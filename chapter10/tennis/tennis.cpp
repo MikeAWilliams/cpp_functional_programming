@@ -13,6 +13,7 @@ static tennis::Score Convert(tennis::internal::points value);
 static std::function<void(const tennis::internal::normalScoring& state)> GetNormalScoringFunction(tennis::GameState& result, const int playerIndex);
 static std::function<void(const tennis::internal::fourtyScoring& state)> GetFourtyScoringFunction(tennis::GameState& result, const tennis::internal::Player whoScored);
 static std::function<void(const tennis::internal::duceScoring& state)> GetDuceScoringFunction(tennis::GameState& result, const tennis::internal::Player whoScored);
+static std::function<void(const tennis::internal::advantageScoring& state)> GetAdvantageScoringFunction(tennis::GameState& result, const tennis::internal::Player whoScored);
 static int GetOtherPlayerIndex(int playerIndex);
 static tennis::internal::Player GetPlayerByIndex(int index);
 
@@ -50,6 +51,17 @@ namespace tennis {
             {
                   result = {tennis::Score::duce, tennis::Score::duce};
             },
+            [&](const internal::advantageScoring &state)
+            {
+               if(internal::Player::player1 == state.leader)
+               {
+                  result = {tennis::Score::advantage, tennis::Score::notAdvantage};
+               }
+               else
+               {
+                  result = {tennis::Score::notAdvantage, tennis::Score::advantage};
+               }
+            },
             [&](const internal::victoryScoring &state)
             {
                if(internal::Player::player1 == state.winner)
@@ -75,6 +87,7 @@ namespace tennis {
                GetNormalScoringFunction(result, 0),
                GetFourtyScoringFunction(result, internal::Player::player1),
                GetDuceScoringFunction(result, internal::Player::player1),
+               GetAdvantageScoringFunction(result, internal::Player::player1),
                [&](const internal::victoryScoring &state)
                {
 
@@ -92,6 +105,7 @@ namespace tennis {
                GetNormalScoringFunction(result, 1),
                GetFourtyScoringFunction(result, internal::Player::player2),
                GetDuceScoringFunction(result, internal::Player::player2),
+               GetAdvantageScoringFunction(result, internal::Player::player2),
                [&](const internal::victoryScoring &state)
                {
 
@@ -176,6 +190,14 @@ static std::function<void(const tennis::internal::fourtyScoring& state)> GetFour
 static std::function<void(const tennis::internal::duceScoring& state)> GetDuceScoringFunction(tennis::GameState& result, const tennis::internal::Player whoScored)
 {
    return [&result, whoScored{std::move(whoScored)}](const tennis::internal::duceScoring &state)
+   {
+      result = tennis::internal::advantageScoring {whoScored};
+   };
+}
+
+static std::function<void(const tennis::internal::advantageScoring& state)> GetAdvantageScoringFunction(tennis::GameState& result, const tennis::internal::Player whoScored)
+{
+   return [&result, whoScored{std::move(whoScored)}](const tennis::internal::advantageScoring &state)
    {
 
    };
