@@ -199,7 +199,13 @@ static std::function<void(const tennis::internal::advantageScoring& state)> GetA
 {
    return [&result, whoScored{std::move(whoScored)}](const tennis::internal::advantageScoring &state)
    {
-
+      if(whoScored == state.leader)
+      {
+         tennis::internal::victoryScoring vsResult;
+         vsResult.winner = whoScored;
+         vsResult.otherPlayerScore = tennis::Score::notAdvantage;
+         result = vsResult;
+      }
    };
 }
 
