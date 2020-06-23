@@ -1,3 +1,4 @@
+#include <array>
 #include <tuple>
 #include <variant>
 
@@ -18,8 +19,7 @@ namespace internal {
 
    struct normalScoring
    {
-      points player1Score;
-      points player2Score;
+      std::array<points, 2> scores;
    };
 
    struct fourtyScoring
@@ -48,4 +48,5 @@ namespace internal {
    std::tuple<Score, Score> GetScore(const GameState& state);
 
    GameState ScorePointP1(const GameState& state);
+   GameState ScorePointP2(const GameState& state);
 }

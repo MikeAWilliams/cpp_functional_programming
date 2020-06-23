@@ -1,4 +1,6 @@
 #include "tennis.h"
+#include <functional>
+#include <iostream>
 
 // This is an example sketched out in Functional Programming in C++ by Ivan Cukic chapter 9 section 9.3
 // The pattern matcher template is the authors with out understanding or modification from me
@@ -8,6 +10,7 @@ template <typename... Ts> patternMatcher(Ts...) -> patternMatcher<Ts...>;
 
 static tennis::internal::points AdvanceScore(tennis::internal::points initialValue);
 static tennis::Score Convert(tennis::internal::points value);
+static std::function<void(const tennis::internal::normalScoring& state)> GetNormalScoringFunction(tennis::GameState& result, const int playerIndex);
 
 namespace tennis {
 
@@ -26,7 +29,7 @@ namespace tennis {
          {
             [&](const internal::normalScoring& state)
             {
-               result = {Convert(state.player1Score), Convert(state.player2Score)};
+               result = {Convert(state.scores[0]), Convert(state.scores[1])};
             },
             [&](const internal::fourtyScoring& state)
             {
@@ -38,15 +41,26 @@ namespace tennis {
    GameState ScorePointP1(const GameState& stateArg)
    {
       GameState result;
+      const int index {0};
       std::visit(
          patternMatcher 
          {
-               [&](const internal::normalScoring &state)
+               GetNormalScoringFunction(result, 0),
+               [&](const internal::fourtyScoring &state)
                {
-                  auto nsResult {state}; 
-                  nsResult.player1Score = AdvanceScore(state.player1Score);
-                  result = nsResult;
-               },
+                  
+               }
+         }, stateArg);
+      return result;
+   }
+
+   GameState ScorePointP2(const GameState& stateArg)
+   {
+      GameState result;
+      std::visit(
+         patternMatcher 
+         {
+               GetNormalScoringFunction(result, 1),
                [&](const internal::fourtyScoring &state)
                {
                   
@@ -78,4 +92,14 @@ static tennis::Score Convert(tennis::internal::points value)
       }
       return tennis::Score::love;
 
+}
+
+static std::function<void(const tennis::internal::normalScoring& state)> GetNormalScoringFunction(tennis::GameState& result, const int playerIndex)
+{
+   return [&result, playerIndex{std::move(playerIndex)}](const tennis::internal::normalScoring& state)
+   {
+      auto nsResult {state}; 
+      nsResult.scores[playerIndex] = AdvanceScore(state.scores[playerIndex]);
+      result = nsResult;
+   };
 }
