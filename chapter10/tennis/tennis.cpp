@@ -11,6 +11,7 @@ template <typename... Ts> patternMatcher(Ts...) -> patternMatcher<Ts...>;
 static tennis::internal::points AdvanceScore(tennis::internal::points initialValue);
 static tennis::Score Convert(tennis::internal::points value);
 static std::function<void(const tennis::internal::normalScoring& state)> GetNormalScoringFunction(tennis::GameState& result, const int playerIndex);
+static std::function<void(const tennis::internal::fourtyScoring& state)> GetFourtyScoringFunction(tennis::GameState& result, const tennis::internal::Player whoScored);
 static int GetOtherPlayerIndex(int playerIndex);
 static tennis::internal::Player GetPlayerByIndex(int index);
 
@@ -43,6 +44,18 @@ namespace tennis {
                {
                   result = {Convert(state.otherPlayerScore), tennis::Score::fourty};
                }
+            },
+            [&](const internal::victoryScoring &state)
+            {
+               if(internal::Player::player1 == state.winner)
+               {
+                  result = {tennis::Score::victory, state.otherPlayerScore};
+               }
+               else
+               {
+                  result = {state.otherPlayerScore, tennis::Score::victory};
+               }
+
             }
          }, stateArg);
       return result;
@@ -56,9 +69,10 @@ namespace tennis {
          patternMatcher 
          {
                GetNormalScoringFunction(result, 0),
-               [&](const internal::fourtyScoring &state)
+               GetFourtyScoringFunction(result, internal::Player::player1),
+               [&](const internal::victoryScoring &state)
                {
-                  
+
                }
          }, stateArg);
       return result;
@@ -71,9 +85,10 @@ namespace tennis {
          patternMatcher 
          {
                GetNormalScoringFunction(result, 1),
-               [&](const internal::fourtyScoring &state)
+               GetFourtyScoringFunction(result, internal::Player::player2),
+               [&](const internal::victoryScoring &state)
                {
-                  
+
                }
          }, stateArg);
       return result;
@@ -121,6 +136,21 @@ static std::function<void(const tennis::internal::normalScoring& state)> GetNorm
          fsResult.otherPlayerScore = state.scores[GetOtherPlayerIndex(playerIndex)];
          result = fsResult;
       }
+   };
+}
+
+static std::function<void(const tennis::internal::fourtyScoring& state)> GetFourtyScoringFunction(tennis::GameState& result, const tennis::internal::Player whoScored)
+{
+   return [&result, whoScored{std::move(whoScored)}](const tennis::internal::fourtyScoring &state)
+   {
+      if(whoScored == state.leader)
+      {
+         tennis::internal::victoryScoring vsResult;
+         vsResult.winner = whoScored;
+         vsResult.otherPlayerScore = Convert(state.otherPlayerScore);
+         result = vsResult;
+      }
+                  
    };
 }
 

@@ -3,6 +3,19 @@
 #include <variant>
 
 namespace tennis {
+
+   enum class Score
+   {
+      love,
+      fifteen,
+      thirty,
+      fourty,
+      duce,
+      advantage,
+      notAdvantage,
+      victory
+   };
+
 namespace internal {
    enum class Player
    {
@@ -27,21 +40,15 @@ namespace internal {
       Player leader;
       points otherPlayerScore;
    };
+
+   struct victoryScoring
+   {
+      Player winner;
+      Score otherPlayerScore;
+   };
 }
 
-   enum class Score
-   {
-      love,
-      fifteen,
-      thirty,
-      fourty,
-      duce,
-      advantage,
-      notAdvantage,
-      victory
-   };
-
-   using GameState = std::variant<internal::normalScoring, internal::fourtyScoring>;
+   using GameState = std::variant<internal::normalScoring, internal::fourtyScoring, internal::victoryScoring>;
 
    GameState MakeLoveLoveGame();
 
