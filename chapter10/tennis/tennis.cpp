@@ -206,6 +206,10 @@ static std::function<void(const tennis::internal::advantageScoring& state)> GetA
          vsResult.otherPlayerScore = tennis::Score::notAdvantage;
          result = vsResult;
       }
+      else
+      {
+         result = tennis::internal::duceScoring{};
+      }
    };
 }
 
