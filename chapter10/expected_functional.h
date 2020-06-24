@@ -1,3 +1,4 @@
+#pragma once
 #include "tl/expected.hpp"
 
 template <typename T, typename E, typename F>
