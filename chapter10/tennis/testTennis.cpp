@@ -296,3 +296,33 @@ TEST_CASE("test p2 goes back to duce from notAdvantage", "[tennis]")
    REQUIRE(tennis::Score::duce == p1Score);
    REQUIRE(tennis::Score::duce == p2Score);
 }
+
+TEST_CASE("test p2 scores after wining", "[tennis]")
+{
+   auto gameState{tennis::MakeLoveLoveGame()};
+   gameState = tennis::ScorePointP2(gameState);
+   gameState = tennis::ScorePointP2(gameState);
+   gameState = tennis::ScorePointP2(gameState);
+   gameState = tennis::ScorePointP2(gameState);
+   gameState = tennis::ScorePointP2(gameState);
+
+   auto [ p1Score, p2Score] = tennis::GetScore(gameState);
+
+   REQUIRE(tennis::Score::love == p1Score);
+   REQUIRE(tennis::Score::victory == p2Score);
+}
+
+TEST_CASE("test p1 scores after wining", "[tennis]")
+{
+   auto gameState{tennis::MakeLoveLoveGame()};
+   gameState = tennis::ScorePointP1(gameState);
+   gameState = tennis::ScorePointP1(gameState);
+   gameState = tennis::ScorePointP1(gameState);
+   gameState = tennis::ScorePointP1(gameState);
+   gameState = tennis::ScorePointP1(gameState);
+
+   auto [ p1Score, p2Score] = tennis::GetScore(gameState);
+
+   REQUIRE(tennis::Score::victory == p1Score);
+   REQUIRE(tennis::Score::love == p2Score);
+}

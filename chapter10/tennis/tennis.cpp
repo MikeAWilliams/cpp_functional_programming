@@ -90,7 +90,7 @@ namespace tennis {
                GetAdvantageScoringFunction(result, internal::Player::player1),
                [&](const internal::victoryScoring &state)
                {
-
+                  result = state;
                }
          }, stateArg);
       return result;
@@ -108,7 +108,7 @@ namespace tennis {
                GetAdvantageScoringFunction(result, internal::Player::player2),
                [&](const internal::victoryScoring &state)
                {
-
+                  result = state;
                }
          }, stateArg);
       return result;
