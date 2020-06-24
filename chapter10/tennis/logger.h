@@ -33,3 +33,9 @@ private:
    valueType m_value;
    std::vector<std::string> m_log;
 };
+
+template<typename valueType, typename F>
+Logger<valueType> transform(const Logger<valueType>& input, F function)
+{
+   return Logger(function(input.Value()), input.Log());
+}

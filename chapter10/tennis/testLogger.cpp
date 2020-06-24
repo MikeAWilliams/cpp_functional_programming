@@ -38,3 +38,20 @@ TEST_CASE("test constructor with vector log", "[logger]")
       ++oldLogIter;
    }
 }
+
+TEST_CASE("test transform", "[logger]")
+{
+   constexpr auto message {"the ansswer"};
+   const Logger<int> testObject{42, message};
+
+   auto result{transform(testObject, 
+      [](int value)
+      { 
+         return value + 3;
+      })};
+
+   REQUIRE(45 == result.Value());
+   auto log{result.Log()};
+   REQUIRE(1 == log.size());
+   REQUIRE(message == log[0]);
+}
