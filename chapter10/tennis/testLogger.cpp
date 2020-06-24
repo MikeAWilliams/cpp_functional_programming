@@ -55,3 +55,22 @@ TEST_CASE("test transform", "[logger]")
    REQUIRE(1 == log.size());
    REQUIRE(message == log[0]);
 }
+
+TEST_CASE("test mbind", "[logger]")
+{
+   constexpr auto message {"the ansswer"};
+   constexpr auto add_message {"added 3"};
+   const Logger<int> testObject{42, message};
+
+   auto result{mbind(testObject, 
+      [add_message](int value)
+      { 
+         return Logger<int>{value + 3, add_message};
+      })};
+
+   REQUIRE(45 == result.Value());
+   auto log{result.Log()};
+   REQUIRE(2 == log.size());
+   REQUIRE(message == log[0]);
+   REQUIRE(add_message == log[1]);
+}

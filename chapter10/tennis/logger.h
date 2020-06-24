@@ -39,3 +39,18 @@ Logger<valueType> transform(const Logger<valueType>& input, F function)
 {
    return Logger(function(input.Value()), input.Log());
 }
+
+template<typename valueType, typename F>
+Logger<valueType> mbind(const Logger<valueType>& input, F function)
+{
+   auto fResult {function(input.Value())};
+
+   std::vector<std::string> resultLog {input.Log()};
+   auto newLog {fResult.Log()};
+   for(const auto& newLogItem : newLog)
+   {
+      resultLog.push_back(newLogItem);
+   }
+   return Logger(fResult.Value(), resultLog);
+}
+
