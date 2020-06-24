@@ -24,8 +24,6 @@ namespace tennis {
       return GameState{};
    }
 
-  
-
    std::tuple<Score, Score> GetScore(const GameState& stateArg)
    {
       std::tuple<tennis::Score, tennis::Score> result;

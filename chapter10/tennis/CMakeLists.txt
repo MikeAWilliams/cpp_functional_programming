@@ -6,7 +6,8 @@ include_directories(
 
 add_executable(tennis 
    main.cpp
+   tennis.cpp
    testTennis.cpp
-   tennis.cpp)
+   testLogger.cpp)
    
 set_property(TARGET tennis PROPERTY CXX_STANDARD 17)
